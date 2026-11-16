@@ -1,43 +1,34 @@
-# Panduan Deployment Gratis SIKAHIM
+# Deployment SIKAHIM
 
-Dokumen ini menjelaskan persiapan deployment SIKAHIM ke internet menggunakan layanan free tier. Targetnya adalah deployment demo yang dapat diakses publik tanpa membeli hosting, domain, atau server database.
+Dokumen ini mencatat konfigurasi deployment demo SIKAHIM menggunakan GitHub, Render Free, PostgreSQL terkelola, dan Supabase Storage.
 
-## Arsitektur yang digunakan
+Konfigurasi ini ditujukan untuk demo atau tugas. Render Free dapat menghentikan service setelah tidak aktif, sedangkan layanan database dan storage memiliki batas kuota. Konfigurasi tersebut belum ditujukan untuk production dengan SLA.
 
-| Kebutuhan       | Layanan                      | Keterangan                                          |
-| --------------- | ---------------------------- | --------------------------------------------------- |
-| Source code     | GitHub                       | Repository harus memiliki branch utama `main`.    |
-| Web Laravel     | Render Free Web Service      | Menjalankan aplikasi Laravel menggunakan Docker.    |
-| PostgreSQL      | Neon Free atau Supabase Free | Database production yang dapat diakses dari Render. |
-| File upload     | Supabase Storage Free        | Menyimpan thumbnail dan materi secara eksternal.    |
-| Database client | DBeaver                      | Opsional, untuk melihat database production.        |
+## Arsitektur
 
-Render Free dapat sleep setelah tidak ada traffic. Supabase dan Neon juga memiliki batas kuota serta dapat menonaktifkan resource yang lama tidak digunakan. Konfigurasi ini ditujukan untuk demo atau tugas, bukan production dengan SLA.
+| Komponen | Layanan | Keterangan |
+|---|---|---|
+| Source code | GitHub | Branch deployment: `main` |
+| Aplikasi Laravel | Render Free Web Service | Dibangun dan dijalankan melalui Docker |
+| Database | Supabase Free atau Neon Free | PostgreSQL production |
+| File upload | Supabase Storage Free | Thumbnail dan materi kegiatan |
+| Database client | DBeaver | Opsional, untuk inspeksi database |
 
-## 1. Persiapan branch `main`
+Render menggunakan filesystem ephemeral. File yang disimpan di container akan hilang saat service restart, sleep, atau redeploy. Karena itu, upload production diarahkan ke Supabase Storage melalui adapter S3.
 
-Jalankan dari root repository:
+## Source code
+
+Branch `main` digunakan sebagai sumber deployment:
 
 ```powershell
 git status
 git branch --show-current
-git branch -m master main
-git add .
-git commit -m "Prepare SIKAHIM for deployment"
 git push -u origin main
 ```
 
-Jika branch `main` sudah ada di GitHub, gunakan:
+Default branch repository GitHub perlu diarahkan ke `main` melalui **Settings > Branches**. File `.env`, kredensial database, access key, dan secret key tidak boleh masuk ke repository.
 
-```powershell
-git push -u origin main
-```
-
-Setelah berhasil, ubah **Default branch** pada GitHub melalui **Settings > Branches** menjadi `main`. Jangan menghapus branch lama sebelum memastikan branch `main` sudah dapat diakses dan deployment berhasil.
-
-## 2. Pemeriksaan sebelum deploy
-
-Pastikan validasi lokal berhasil:
+## Pemeriksaan sebelum deployment
 
 ```powershell
 composer install
@@ -49,7 +40,7 @@ vendor\bin\pint --test
 npm.cmd run build
 ```
 
-Pastikan file berikut tidak pernah di-commit:
+File lokal berikut tidak termasuk source deployment:
 
 ```text
 .env
@@ -57,104 +48,70 @@ Pastikan file berikut tidak pernah di-commit:
 storage/logs/*
 ```
 
-`APP_KEY`, password database, token storage, dan secret provider hanya boleh diisi melalui Environment Variables pada Render.
+## PostgreSQL
 
-## 3. Menyiapkan database PostgreSQL gratis
+Supabase digunakan sebagai pilihan utama karena menyediakan PostgreSQL dan Storage dalam satu project. Neon dapat digunakan sebagai alternatif database.
 
-Pilih salah satu:
+Informasi yang diperlukan dari provider database:
 
-- [Neon Free](https://neon.tech): PostgreSQL ringan untuk prototype.
-- [Supabase Free](https://supabase.com): PostgreSQL sekaligus menyediakan Storage.
+- host
+- port
+- nama database
+- username
+- password
+- kebutuhan SSL
 
-Untuk konfigurasi paling sederhana, gunakan **Supabase Free** agar database dan file storage berada dalam satu project.
+Untuk koneksi Render ke Supabase, gunakan Session Pooler apabila koneksi IPv4 diperlukan. Nilai `DB_SSLMODE` diset ke `require`.
 
-### Supabase
+## Supabase Storage
 
-1. Buat project baru.
-2. Simpan password database.
-3. Buka **Project Settings > Database**.
-4. Salin host, port, database, user, dan password.
-5. Buka **Storage > New bucket**.
-6. Buat bucket bernama `sikahim-files`.
-7. Jadikan bucket public untuk kebutuhan demo.
-8. Catat:
-   - Project URL.
-   - Storage S3 endpoint.
-   - S3 access key.
-   - S3 secret key.
-   - Nama bucket.
+Bucket public `sikahim-files` digunakan untuk kebutuhan demo. Nilai berikut tersedia pada pengaturan S3 Supabase:
 
-Jangan memasukkan secret key ke GitHub.
+- Project reference
+- S3 endpoint
+- access key
+- secret key
+- region
 
-## 4. Konfigurasi storage upload
+Secret key hanya disimpan sebagai environment variable Render.
 
-Render Free memiliki filesystem ephemeral. File yang disimpan ke `storage/app/public` dapat hilang ketika service restart, sleep, atau redeploy.
-
-Repository ini menyediakan konfigurasi `FILESYSTEM_UPLOAD_DISK`. Di lokal nilainya tetap `public`; di Render nilainya dapat diubah menjadi `s3` tanpa mengubah source code.
-
-### Adapter S3
-
-Adapter `league/flysystem-aws-s3-v3` sudah tercantum di `composer.json`, sehingga Render akan memasangnya ketika menjalankan `composer install`.
-
-### Konfigurasi environment storage
-
-Gunakan variable berikut pada Render:
+### Environment variable storage
 
 ```dotenv
 FILESYSTEM_DISK=s3
 FILESYSTEM_UPLOAD_DISK=s3
 
-AWS_ACCESS_KEY_ID=isi_s3_access_key_supabase
-AWS_SECRET_ACCESS_KEY=isi_s3_secret_key_supabase
-AWS_DEFAULT_REGION=us-east-1
+AWS_ACCESS_KEY_ID=isi_s3_access_key
+AWS_SECRET_ACCESS_KEY=isi_s3_secret_key
+AWS_DEFAULT_REGION=isi_region_supabase
 AWS_BUCKET=sikahim-files
 AWS_ENDPOINT=https://PROJECT_REF.storage.supabase.co/storage/v1/s3
 AWS_URL=https://PROJECT_REF.supabase.co/storage/v1/object/public/sikahim-files
 AWS_USE_PATH_STYLE_ENDPOINT=true
 ```
 
-`PROJECT_REF` diganti dengan project reference Supabase.
+`PROJECT_REF` diganti dengan project reference Supabase. Adapter `league/flysystem-aws-s3-v3` sudah tercantum di `composer.json` dan dipasang saat image Docker dibangun.
 
-Kode upload dan URL thumbnail sudah membaca disk yang dikonfigurasi melalui `FILESYSTEM_UPLOAD_DISK`. Jangan menggunakan `asset('storage/...')` untuk file yang disimpan di Supabase Storage.
+Di lokal, `FILESYSTEM_UPLOAD_DISK=public` tetap dapat digunakan. Kode upload membaca disk dari konfigurasi tersebut, sedangkan URL file dibuat melalui disk yang sama.
 
-## 5. Menyiapkan Docker untuk Render
+## Docker dan Render
 
-Render menjalankan Laravel melalui Docker. Repository ini sudah menyediakan `Dockerfile` dan `.dockerignore` untuk deployment demo Render.
+Repository menyediakan `Dockerfile` dan `.dockerignore`. Image melakukan hal berikut:
 
-Gunakan panduan resmi Render untuk Laravel Docker:
+- menggunakan PHP 8.3;
+- memasang ekstensi `pdo_pgsql` dan `mbstring`;
+- memasang dependency Composer;
+- membangun asset frontend;
+- menjalankan migration;
+- menjalankan Laravel pada `0.0.0.0:$PORT`.
 
-[https://render.com/docs/deploy-php-laravel-docker](https://render.com/docs/deploy-php-laravel-docker)
+Migration dijalankan saat container mulai. Seeder tidak dijalankan otomatis agar restart service tidak menulis ulang data demo.
 
-Konfigurasi container wajib:
+## Environment variable Render
 
-- PHP minimal 8.2.
-- Ekstensi `pdo_pgsql`.
-- Composer dependencies ter-install.
-- Asset frontend sudah dibuat dengan `npm run build`.
-- Web server mendengarkan `0.0.0.0:$PORT`.
-- Laravel dijalankan pada port yang diberikan Render.
-- `php artisan migrate --force` dijalankan saat container mulai.
+Web Service Render menggunakan runtime **Docker**, branch `main`, dan instance **Free**.
 
-Seeder tidak dijalankan otomatis oleh container agar restart tidak mengubah data demo. Jalankan seeding satu kali dari Render Shell:
-
-```bash
-php artisan db:seed --force
-```
-
-## 6. Membuat Web Service di Render
-
-1. Buka [Render Dashboard](https://dashboard.render.com).
-2. Pilih **New > Web Service**.
-3. Hubungkan repository GitHub.
-4. Pilih branch `main`.
-5. Pilih runtime **Docker**.
-6. Pilih instance **Free**.
-7. Tambahkan semua environment variables aplikasi.
-8. Tambahkan environment variables database.
-9. Tambahkan environment variables Supabase Storage.
-10. Jalankan deployment.
-
-Environment minimum:
+Variabel aplikasi minimum:
 
 ```dotenv
 APP_NAME=SIKAHIM
@@ -178,83 +135,76 @@ CACHE_STORE=database
 QUEUE_CONNECTION=database
 ```
 
-Buat `APP_KEY` secara lokal tanpa menulisnya ke file `.env`:
+`APP_URL` dan `ASSET_URL` harus menggunakan `https://`. Aplikasi juga memaksa HTTPS pada environment production untuk mencegah asset diblokir sebagai mixed content.
+
+Nilai `APP_KEY` dapat dibuat tanpa menyimpan perubahan ke `.env`:
 
 ```powershell
 php artisan key:generate --show
 ```
 
-## 7. Migration dan seeding production
+Tambahkan variabel Supabase Storage dari bagian sebelumnya pada Environment Variables Render.
 
-Setelah service berhasil build, jalankan migration satu kali melalui shell Render atau deploy command:
+## Migration dan seeding
+
+Setelah deployment berhasil:
 
 ```bash
 php artisan migrate --force
-```
-
-Untuk data demo:
-
-```bash
 php artisan db:seed --force
 ```
 
-Jangan menggunakan `migrate:fresh` pada database publik karena perintah tersebut menghapus semua tabel dan data.
+Image saat ini menjalankan migration ketika service dimulai. Perintah `migrate:fresh` tidak digunakan pada database publik karena menghapus seluruh tabel dan data.
 
-Seeder SIKAHIM menggunakan data contoh realistis dan dapat dijalankan ulang, tetapi seeding production tetap sebaiknya dilakukan hanya saat database baru dibuat.
+## Verifikasi service
 
-## 8. Pengujian setelah online
+Pemeriksaan pascadeployment:
 
-Periksa urutan berikut:
+1. Landing page memuat asset CSS dan gambar melalui HTTPS.
+2. Login admin dan user berhasil.
+3. Dashboard dan daftar kegiatan dapat dibuka.
+4. User dapat melakukan pendaftaran.
+5. Admin dapat membuat kegiatan.
+6. Thumbnail dan materi tersimpan di Supabase Storage.
+7. Data tetap tersedia setelah service sleep dan aktif kembali.
 
-1. Landing page dapat dibuka.
-2. Login admin berhasil.
-3. Dashboard admin dapat dibuka.
-4. Daftar kegiatan tampil.
-5. User dapat registrasi dan login.
-6. User dapat melihat kegiatan.
-7. Pendaftaran kegiatan berhasil.
-8. Admin dapat membuat kegiatan.
-9. Upload thumbnail dan materi tersimpan di Supabase Storage.
-10. Setelah Render sleep lalu aktif kembali, data database dan file tetap tersedia.
-
-Jika aplikasi menampilkan error database:
+Perintah pemeriksaan melalui Render Shell:
 
 ```bash
 php artisan config:clear
 php artisan migrate:status
 ```
 
-Jika upload menghasilkan URL `/storage/...`, berarti kode upload masih menggunakan disk lokal dan belum diarahkan ke disk S3/Supabase.
+URL file yang masih berbentuk `/storage/...` menandakan upload masih menggunakan disk lokal.
 
-## 9. Keamanan minimum
+## Keamanan
 
-- Set `APP_DEBUG=false`.
-- Jangan commit `.env`.
-- Jangan menaruh password database di README.
-- Gunakan password demo yang berbeda untuk deployment publik.
-- Batasi ukuran dan tipe file upload.
-- Jangan menjalankan `migrate:fresh` pada database online.
-- Hapus data pribadi asli sebelum deployment demo.
-- Periksa penggunaan kuota Render dan Supabase secara berkala.
+- `APP_DEBUG=false` pada deployment.
+- Secret hanya disimpan di Environment Variables Render.
+- Password akun demo diganti sebelum URL dibagikan.
+- File upload dibatasi berdasarkan ukuran dan MIME type.
+- Data pribadi asli tidak digunakan pada data demo.
+- `migrate:fresh` tidak dijalankan pada database publik.
+- Kuota Render dan Supabase dipantau secara berkala.
 
-## 10. Checklist final
+## Checklist
 
-- [ ] Branch GitHub utama adalah `main`.
-- [ ] Repository dapat di-build dari kondisi bersih.
-- [ ] `APP_KEY` sudah diisi di Render.
+- [ ] Default branch GitHub adalah `main`.
+- [ ] Repository dapat dibangun dari kondisi bersih.
+- [ ] `APP_KEY` sudah tersedia di Render.
 - [ ] `APP_DEBUG=false`.
-- [ ] Database PostgreSQL production sudah dibuat.
+- [ ] `APP_URL` dan `ASSET_URL` menggunakan HTTPS.
+- [ ] Database PostgreSQL production tersedia.
 - [ ] `DB_SSLMODE=require`.
-- [ ] Migration sudah berhasil.
-- [ ] Seeder demo sudah dijalankan.
-- [ ] Adapter S3 sudah ter-install.
-- [ ] Kode upload memakai disk S3.
-- [ ] URL file memakai `Storage::disk('s3')->url(...)`.
-- [ ] Bucket Supabase public untuk demo.
-- [ ] Tidak ada secret di GitHub.
-- [ ] Login, pendaftaran, pembuatan kegiatan, dan upload sudah diuji.
+- [ ] Migration berhasil.
+- [ ] Seeder demo telah dijalankan.
+- [ ] Adapter S3 terpasang.
+- [ ] Bucket Supabase tersedia.
+- [ ] Upload dan URL file menggunakan disk S3.
+- [ ] Secret tidak terdapat di GitHub.
+- [ ] Login, pendaftaran, pembuatan kegiatan, dan upload telah diuji.
 
-## Referensi resmi
+## Referensi
 
 - [Render Free Services](https://render.com/docs/free)
 - [Render Laravel Docker Deployment](https://render.com/docs/deploy-php-laravel-docker)

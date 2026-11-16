@@ -34,6 +34,7 @@ class UsersTableSeeder extends Seeder
                     'name' => $name,
                     'role' => 'admin',
                     'password' => Hash::make('password'),
+                    'email_verified_at' => now(),
                     'updated_at' => now(),
                 ]
             );
@@ -90,6 +91,7 @@ class UsersTableSeeder extends Seeder
                     'name' => $name,
                     'role' => 'user',
                     'password' => Hash::make('password'),
+                    'email_verified_at' => now(),
                     'updated_at' => now(),
                 ]
             );
