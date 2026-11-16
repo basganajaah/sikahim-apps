@@ -119,12 +119,7 @@ Kode upload dan URL thumbnail sudah membaca disk yang dikonfigurasi melalui `FIL
 
 ## 5. Menyiapkan Docker untuk Render
 
-Render menjalankan Laravel melalui Docker. Repository harus memiliki:
-
-- `Dockerfile`
-- `.dockerignore`
-- script startup/deploy
-- web server yang meneruskan request ke `public/index.php`
+Render menjalankan Laravel melalui Docker. Repository ini sudah menyediakan `Dockerfile` dan `.dockerignore` untuk deployment demo Render.
 
 Gunakan panduan resmi Render untuk Laravel Docker:
 
@@ -137,7 +132,14 @@ Konfigurasi container wajib:
 - Composer dependencies ter-install.
 - Asset frontend sudah dibuat dengan `npm run build`.
 - Web server mendengarkan `0.0.0.0:$PORT`.
-- Root web diarahkan ke folder `public`.
+- Laravel dijalankan pada port yang diberikan Render.
+- `php artisan migrate --force` dijalankan saat container mulai.
+
+Seeder tidak dijalankan otomatis oleh container agar restart tidak mengubah data demo. Jalankan seeding satu kali dari Render Shell:
+
+```bash
+php artisan db:seed --force
+```
 
 ## 6. Membuat Web Service di Render
 
