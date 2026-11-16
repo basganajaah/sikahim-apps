@@ -3,97 +3,110 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class KegiatanSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $kegiatanData = [
+        $adminId = DB::table('users')->where('role', 'admin')->value('id');
+
+        if (! $adminId) {
+            $this->command->warn('Tidak ada admin. Kegiatan tidak dapat dibuat.');
+
+            return;
+        }
+
+        $activities = [
             [
                 'activity_name' => 'Kajian Islam dan Teknologi',
-                'category_id' => 1, // ID untuk kategori 'Kajian'
-                'penyelenggara' => 'Aga Group',
-                'datetime_started' => Carbon::parse('2024-12-10 09:00:00'),
-                'datetime_finished' => Carbon::parse('2024-12-10 12:00:00'),
+                'category_name' => 'Kajian',
+                'penyelenggara' => 'DKM Masjid SIKAHIM',
+                'start' => '2026-12-05 09:00:00',
+                'finish' => '2026-12-05 12:00:00',
                 'location' => 'Masjid Raya',
                 'max_participant' => 100,
-                'description' => 'Mendiskusikan peran Islam dalam perkembangan teknologi.',
+                'description' => 'Mendiskusikan peran Islam dalam perkembangan teknologi dan kehidupan jamaah.',
                 'status' => 'Belum Mulai',
                 'verification' => 'Terverifikasi',
                 'tags' => ['Islam', 'Teknologi', 'Islami'],
             ],
             [
                 'activity_name' => 'Lomba Baca dan Tulis Al-Qur\'an',
-                'category_id' => 2, // ID untuk kategori 'Kompetisi'
-                'penyelenggara' => 'Citra Group',
-                'datetime_started' => Carbon::parse('2024-12-20 08:00:00'),
-                'datetime_finished' => Carbon::parse('2024-12-20 17:00:00'),
-                'location' => 'Lapangan Kota',
+                'category_name' => 'Kompetisi',
+                'penyelenggara' => 'Remaja Masjid SIKAHIM',
+                'start' => '2026-12-12 08:00:00',
+                'finish' => '2026-12-12 17:00:00',
+                'location' => 'Lapangan Masjid',
                 'max_participant' => 200,
-                'description' => 'Kompetisi untuk menguji kemampuan membaca dan menulis Al-Qur\'an.',
+                'description' => 'Kompetisi untuk mengembangkan kecintaan generasi muda kepada Al-Qur\'an.',
                 'status' => 'Belum Mulai',
                 'verification' => 'Menunggu verifikasi',
                 'tags' => ['Al-Qur\'an', 'Lomba', 'Belajar'],
             ],
             [
                 'activity_name' => 'Pelatihan Manajemen Waktu Islami',
-                'category_id' => 3, // ID untuk kategori 'Pelatihan'
-                'penyelenggara' => 'Budi Group',
-                'datetime_started' => Carbon::parse('2024-12-15 10:00:00'),
-                'datetime_finished' => Carbon::parse('2024-12-15 15:00:00'),
-                'location' => 'Gedung Pelatihan',
+                'category_name' => 'Pelatihan',
+                'penyelenggara' => 'Biro Pendidikan Masjid',
+                'start' => '2026-11-28 10:00:00',
+                'finish' => '2026-11-28 15:00:00',
+                'location' => 'Ruang Serbaguna',
                 'max_participant' => 50,
-                'description' => 'Pelatihan untuk mengelola waktu dengan prinsip Islam.',
-                'status' => 'Berlangsung',
+                'description' => 'Pelatihan mengelola waktu dengan prinsip disiplin dan amanah dalam Islam.',
+                'status' => 'Belum Mulai',
                 'verification' => 'Terverifikasi',
                 'tags' => ['Belajar', 'Mengaji', 'Dakwah'],
             ],
             [
                 'activity_name' => 'Aksi Sosial Solidaritas Umat',
-                'category_id' => 4, // ID untuk kategori 'Sosial'
-                'penyelenggara' => 'Relawan Peduli',
-                'datetime_started' => Carbon::parse('2024-12-22 08:00:00'),
-                'datetime_finished' => Carbon::parse('2024-12-22 14:00:00'),
+                'category_name' => 'Sosial',
+                'penyelenggara' => 'Relawan Peduli Masjid',
+                'start' => '2026-12-20 08:00:00',
+                'finish' => '2026-12-20 14:00:00',
                 'location' => 'Kampung Harapan',
                 'max_participant' => 150,
-                'description' => 'Kegiatan sosial untuk membantu masyarakat kurang mampu.',
+                'description' => 'Kegiatan sosial untuk memperkuat kepedulian dan solidaritas antarjamaah.',
                 'status' => 'Belum Mulai',
                 'verification' => 'Terverifikasi',
                 'tags' => ['Solidaritas', 'Kebersamaan', 'Sosial'],
             ],
         ];
 
-        foreach ($kegiatanData as $data) {
-            // Insert kegiatan
-            $kegiatanId = DB::table('kegiatan')->insertGetId([
-                'category_id' => $data['category_id'],
-                'activity_name' => $data['activity_name'],
-                'penyelenggara' => $data['penyelenggara'],
-                'datetime_started' => $data['datetime_started'],
-                'datetime_finished' => $data['datetime_finished'],
-                'location' => $data['location'],
-                'max_participant' => $data['max_participant'],
-                'description' => $data['description'],
-                'status' => $data['status'],
-                'verification' => $data['verification'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        foreach ($activities as $activity) {
+            $categoryId = DB::table('kategori')
+                ->where('category_name', $activity['category_name'])
+                ->value('category_id');
 
-            // Attach tags via pivot table (memiliki_tag)
+            DB::table('kegiatan')->updateOrInsert(
+                ['activity_name' => $activity['activity_name']],
+                [
+                    'id' => $adminId,
+                    'category_id' => $categoryId,
+                    'penyelenggara' => $activity['penyelenggara'],
+                    'datetime_started' => Carbon::parse($activity['start']),
+                    'datetime_finished' => Carbon::parse($activity['finish']),
+                    'location' => $activity['location'],
+                    'max_participant' => $activity['max_participant'],
+                    'description' => $activity['description'],
+                    'status' => $activity['status'],
+                    'verification' => $activity['verification'],
+                    'updated_at' => now(),
+                ]
+            );
+
+            $activityId = DB::table('kegiatan')
+                ->where('activity_name', $activity['activity_name'])
+                ->value('activity_id');
+
             $tagIds = DB::table('tag')
-                ->whereIn('tag_name', $data['tags'])
-                ->pluck('tag_id')
-                ->toArray();
+                ->whereIn('tag_name', $activity['tags'])
+                ->pluck('tag_id');
 
+            DB::table('memiliki_tag')->where('activity_id', $activityId)->delete();
             foreach ($tagIds as $tagId) {
                 DB::table('memiliki_tag')->insert([
-                    'activity_id' => $kegiatanId,
+                    'activity_id' => $activityId,
                     'tag_id' => $tagId,
                 ]);
             }

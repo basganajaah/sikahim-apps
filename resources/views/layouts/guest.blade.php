@@ -9,7 +9,9 @@
 
         <style>
             body {
+                height: 100vh;
                 margin: 0;
+                overflow: hidden;
                 font-family: 'Figtree', sans-serif;
                 background-image: url('{{ asset('Images/Masjid_LH_polban.jpg') }}');
                 background-size: cover;
@@ -30,14 +32,15 @@
             }
 
             .container {
+                box-sizing: border-box;
+                height: 100vh;
                 position: relative;
                 z-index: 2;
-                min-height: 100vh;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                padding: 20px;
+                padding: 16px;
             }
 
             .box {
@@ -45,7 +48,7 @@
                 color: #ffffff;
                 width: 100%;
                 max-width: 400px;
-                padding: 30px;
+                padding: 24px;
                 border-radius: 12px;
                 box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.5), inset 0px 1px 2px rgba(255, 255, 255, 0.1);
                 text-align: center;
@@ -71,9 +74,9 @@
             }
 
             .logo {
-                width: 160px;
-                height: 160px;
-                margin-bottom: 20px;
+                width: 88px;
+                height: 88px;
+                margin-bottom: 12px;
                 background:gray; /* Latar belakang logo gelap */
                 border-radius: 50%;
                 display: flex;
@@ -88,24 +91,15 @@
                 height: auto;
             }
 
-            .welcome-section {
-                margin-top: 50px;
-                text-align: center;
-                color: #ffffff;
-                padding: 50px;
-                background-color: rgba(45, 45, 45, 0.9); /* Latar belakang gelap */
-                border-radius: 10px;
-                max-width: 800px;
-            }
-
             @media (max-width: 768px) {
                 .box {
                     padding: 20px;
                 }
 
                 .logo {
-                    width: 60px;
-                    height: 60px;
+                    width: 64px;
+                    height: 64px;
+                    margin-bottom: 8px;
                 }
             }
         </style>
@@ -137,12 +131,5 @@
             </div>
         </div>
 
-        <!-- Welcome Section -->
-        <div id="welcome" class="welcome-section">
-            <h2>Selamat Datang di Aplikasi SIKAHIM</h2>
-            <p>
-                Silahkan Masuk atau Daftar Untuk Melanjutkan.
-            </p>
-        </div>
     </body>
 </html>

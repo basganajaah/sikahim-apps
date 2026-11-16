@@ -1,91 +1,75 @@
 <?php
+
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Kegiatan;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class KegiatanController extends Controller
 {
     public function index()
-    {   
-        $kegiatan = Kegiatan::with('kategori', 'tags')->get();
+    {
+        $kegiatan = Kegiatan::with(['kategori', 'tags'])
+            ->withCount('pendaftaran')
+            ->latest('datetime_started')
+            ->get();
 
         return view('pages.list-kegiatan', compact('kegiatan'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        // Validasi Input
         $validated = $request->validate([
-            'ifMultiple' => 'nullable|file|mimes:jpg,jpeg,png',
-            'materi' => 'nullable|array',
-            'materi.*' => 'file|mimes:pdf,doc,docx',
-            'activity_name' => 'required|string|max:255',
-            'penyelenggara' => 'required|string|max:255',
-            'category_id' => 'required|exists:kategori,category_id',
-            'sel2Category' => 'nullable|array',
-            'sel2Category.*' => 'nullable|exists:tag,tag_id',
-            'datetime_started' => 'required|date|before:datetime_finished',
-            'datetime_finished' => 'required|date|after:datetime_started',
-            'max_participant' => 'required|integer|min:1',
-            'location' => 'required|string|max:255',
-            'description' => 'required|string',
-            'user_id' => 'required|exists:users,id',
+            'thumbnail' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'materi' => ['nullable', 'array'],
+            'materi.*' => ['file', 'mimes:pdf,doc,docx', 'max:10240'],
+            'activity_name' => ['required', 'string', 'max:255'],
+            'penyelenggara' => ['required', 'string', 'max:255'],
+            'category_id' => ['required', 'exists:kategori,category_id'],
+            'sel2Category' => ['nullable', 'array'],
+            'sel2Category.*' => ['integer', 'exists:tag,tag_id'],
+            'datetime_started' => ['required', 'date', 'before:datetime_finished'],
+            'datetime_finished' => ['required', 'date', 'after:datetime_started'],
+            'max_participant' => ['nullable', 'integer', 'min:1'],
+            'location' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
         ]);
 
-        $tags = $request->input('sel2Category', []);
+        $kegiatan = DB::transaction(function () use ($request, $validated) {
+            $materiPaths = collect($request->file('materi', []))
+                ->map(fn ($file) => $file->store('materi', 'public'))
+                ->values()
+                ->all();
 
-        // Simpan Data Kegiatan
-        $kegiatan = new Kegiatan();
-        $kegiatan->thumbnail = $request->file('ifMultiple') 
-            ? $request->file('ifMultiple')->store('thumbnails', 'public') 
-            : null;
+            $kegiatan = Kegiatan::create([
+                'id' => $request->user()->id,
+                'thumbnail' => $request->file('thumbnail')?->store('thumbnails', 'public'),
+                'materi' => $materiPaths ?: null,
+                'activity_name' => $validated['activity_name'],
+                'penyelenggara' => $validated['penyelenggara'],
+                'category_id' => $validated['category_id'],
+                'datetime_started' => $validated['datetime_started'],
+                'datetime_finished' => $validated['datetime_finished'],
+                'max_participant' => $validated['max_participant'] ?? null,
+                'location' => $validated['location'],
+                'description' => $validated['description'],
+            ]);
 
-        // Simpan file materi jika ada
-        if ($request->has('materi')) {
-            $materiPaths = [];
-            foreach ($request->file('materi') as $materiFile) {
-                $materiPaths[] = $materiFile->store('materi', 'public'); // Simpan tiap materi
-            }
-            $kegiatan->materi = json_encode($materiPaths); // Simpan array file paths sebagai JSON
-        }
+            $kegiatan->tags()->sync($validated['sel2Category'] ?? []);
 
-        // Simpan data lainnya
-        $kegiatan->id = $validated['user_id'];
-        $kegiatan->activity_name = $validated['activity_name'];
-        $kegiatan->penyelenggara = $validated['penyelenggara'];
-        $kegiatan->category_id = $validated['category_id'];
-        $kegiatan->datetime_started = $validated['datetime_started'];
-        $kegiatan->datetime_finished = $validated['datetime_finished'];
-        $kegiatan->max_participant = $validated['max_participant'];
-        $kegiatan->location = $validated['location'];
-        $kegiatan->description = $validated['description'];
+            return $kegiatan;
+        });
 
-        $kegiatan->save(); // Simpan kegiatan dan dapatkan ID kegiatan yang baru
-
-        $activity_id = $kegiatan->id    ;
-
-        // Simpan Tags jika ada
-        if ($request->has('sel2Category')) {
-            $kegiatan->tags()->sync($validated['sel2Category']);
-        }
-
-        return redirect()->route('list-kegiatan')->with('success', 'Kegiatan berhasil dibuat.');
+        return redirect()->route('list-kegiatan')
+            ->with('success', "Kegiatan {$kegiatan->activity_name} berhasil dibuat dan menunggu verifikasi.");
     }
 
-    public function destroy($id)
+    public function destroy(Kegiatan $kegiatan): RedirectResponse
     {
-        $kegiatan = Kegiatan::find($id);
-
-        if (!$kegiatan) {
-            return response()->json(['message' => 'Kegiatan tidak ditemukan'], 404);
-        }
-
         $kegiatan->delete();
 
-        return response()->json(['message' => 'Kegiatan berhasil dihapus'], 200);
+        return redirect()->route('list-kegiatan')->with('success', 'Kegiatan berhasil dihapus.');
     }
 }
-
-

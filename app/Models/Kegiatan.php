@@ -4,18 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class Kegiatan extends Model
 {
     use HasFactory;
 
     protected $table = 'kegiatan';
+
     protected $primaryKey = 'activity_id';
+
     public $incrementing = true;
+
     protected $keyType = 'int';
 
     protected $fillable = [
+        'id',
         'thumbnail',
         'activity_name',
         'penyelenggara',
@@ -31,7 +34,32 @@ class Kegiatan extends Model
     protected $casts = [
         'datetime_started' => 'datetime',
         'datetime_finished' => 'datetime',
+        'materi' => 'array',
     ];
+
+    public function penyelenggaraUser()
+    {
+        return $this->belongsTo(User::class, 'id');
+    }
+
+    public function pendaftaran()
+    {
+        return $this->hasMany(Pendaftaran::class, 'activity_id', 'activity_id');
+    }
+
+    public function evaluasi()
+    {
+        return $this->hasMany(Evaluasi::class, 'activity_id', 'activity_id');
+    }
+
+    public function getRemainingSlotsAttribute(): ?int
+    {
+        if ($this->max_participant === null) {
+            return null;
+        }
+
+        return max(0, $this->max_participant - $this->pendaftaran()->count());
+    }
 
     public function kategori()
     {
@@ -43,4 +71,3 @@ class Kegiatan extends Model
         return $this->belongsToMany(Tag::class, 'memiliki_tag', 'activity_id', 'tag_id');
     }
 }
-

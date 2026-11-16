@@ -7,15 +7,22 @@
 @stop
 
 @section('content')
+    <x-page-hero
+        eyebrow="Monitoring Agenda"
+        title="Ringkasan Kegiatan"
+        description="Pantau status agenda masjid dan tindak lanjuti kegiatan yang membutuhkan perhatian."
+        :action="route('create-kegiatan')"
+        action-text="Tambah Kegiatan"
+    />
     <div class="row">
         <div class="col-md-6 col-lg-4">
-            <x-adminlte-small-box title="2" text="Kegiatan Baru" icon="fas fa-search-plus" theme="primary" url="list-kegiatan" url-text="Selengkapnya"/>
+            <x-adminlte-small-box title="{{ $newCount }}" text="Kegiatan Menunggu Verifikasi" icon="fas fa-search-plus" theme="primary" url="{{ route('list-kegiatan') }}" url-text="Selengkapnya"/>
         </div>
         <div class="col-md-6 col-lg-4">
-            <x-adminlte-small-box title="1" text="Kegiatan Berlangsung" icon="fas fa-hourglass-half" theme="warning" url="list-kegiatan" url-text="Selengkapnya"/>
+            <x-adminlte-small-box title="{{ $ongoingCount }}" text="Kegiatan Berlangsung" icon="fas fa-hourglass-half" theme="warning" url="{{ route('list-kegiatan') }}" url-text="Selengkapnya"/>
         </div>
         <div class="col-md-6 col-lg-4">
-            <x-adminlte-small-box title="5" text="Kegiatan Selesai" icon="fas fa-check-double" theme="success" url="list-kegiatan" url-text="Selengkapnya"/>
+            <x-adminlte-small-box title="{{ $completedCount }}" text="Kegiatan Selesai" icon="fas fa-check-double" theme="success" url="{{ route('list-kegiatan') }}" url-text="Selengkapnya"/>
         </div>
     </div>
 @stop

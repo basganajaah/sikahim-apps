@@ -26,7 +26,7 @@
                 ['data' => 'email'],
                 ['data' => 'actions', 'orderable' => false],
             ],
-            'ajax' => '/users',
+            'ajax' => route('users.index'),
         ];
     @endphp
 
@@ -42,7 +42,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).on('click', '.delete-btn', function() {
-            var userId = $(this).data('id'); // Mendapatkan ID pengguna
+            var userId = $(this).data('id');
 
             Swal.fire({
                 title: 'Apakah Anda yakin?',
@@ -56,7 +56,7 @@
                 if (result.isConfirmed) {
                     // Jika dikonfirmasi, kirim request delete ke server
                     $.ajax({
-                        url: '/users/' + userId,
+                        url: '{{ url('/admin/users') }}/' + userId,
                         type: 'DELETE',
                         data: {
                             "_token": "{{ csrf_token() }}",

@@ -7,86 +7,101 @@
 @stop
 
 @section('content')
+    <x-page-hero
+        eyebrow="Panel Pengelola Masjid"
+        title="Dashboard SIKAHIM"
+        description="Pantau agenda, pendaftaran, dan partisipasi jamaah dari satu tempat."
+        :action="route('create-kegiatan')"
+        action-text="Buat Kegiatan"
+    />
+
+    <div class="row mb-4 dashboard-metrics">
+        <div class="col-sm-6 col-xl-3">
+            <div class="small-box bg-white">
+                <div class="inner"><h3>{{ $totalKegiatan }}</h3><p>Total Kegiatan</p></div>
+                <div class="icon metric-icon-primary"><i class="fas fa-calendar-alt"></i></div>
+                <a href="{{ route('list-kegiatan') }}" class="small-box-footer">Lihat kegiatan <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="small-box bg-white">
+                <div class="inner"><h3>{{ $pendingKegiatan }}</h3><p>Menunggu Verifikasi</p></div>
+                <div class="icon metric-icon-warning"><i class="fas fa-hourglass-half"></i></div>
+                <a href="{{ route('list-kegiatan') }}" class="small-box-footer">Periksa sekarang <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="small-box bg-white">
+                <div class="inner"><h3>{{ $totalPendaftaran }}</h3><p>Total Pendaftaran</p></div>
+                <div class="icon metric-icon-success"><i class="fas fa-users"></i></div>
+                <a href="{{ route('list-kegiatan') }}" class="small-box-footer">Lihat peserta <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="small-box bg-white">
+                <div class="inner"><h3>{{ $totalPengguna }}</h3><p>Jamaah Terdaftar</p></div>
+                <div class="icon metric-icon-info"><i class="fas fa-user-friends"></i></div>
+                <a href="{{ route('kelola-pengguna') }}" class="small-box-footer">Kelola jamaah <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex align-items-center mb-3">
+        <div>
+            <h2 class="h4 mb-1">Akses Cepat</h2>
+            <p class="text-muted mb-0">Kelola operasional masjid dengan lebih terarah.</p>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-6 col-lg-4">
-            <div class="card card-outline card-primary">
+            <div class="card dashboard-action-card">
                 <div class="card-header">
-                    <p class="card-title text-bold">Buat Kegiatan</p> <br>
-                </div>
-                <div class="card-body custom-bg1">
-                    <h6 class="text-black font-bold mt-5">Mulai membuat kegiatan baru di aplikasi</h6>
-                </div>
-                <a href="create-kegiatan">
-                    <div class="card-footer card-primary text-center hover:bg-gray-950">
-                        Ke halaman <b>Buat Kegiatan</b>
-                        <i class="fas fa-arrow-right text-primary px-1"></i>
+                    <div class="dashboard-action-icon dashboard-action-icon-primary">
+                        <i class="fas fa-plus"></i>
                     </div>
+                    <p class="card-title">Buat Kegiatan</p>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">Mulai membuat kegiatan baru di aplikasi dengan jadwal, kategori, kuota, dan materi.</p>
+                </div>
+                <a href="{{ route('create-kegiatan') }}" class="card-footer dashboard-action-link">
+                    Buat kegiatan sekarang <i class="fas fa-arrow-right ml-1"></i>
                 </a>
             </div>
         </div>
         <div class="col-md-6 col-lg-4">
-            <div class="card card-outline card-warning">
+            <div class="card dashboard-action-card">
                 <div class="card-header">
-                    <p class="card-title text-bold">List Kegiatan</p>
-                </div>
-                <div class="card-body custom-bg2">
-                    <h6 class="text-black font-bold mt-5">Lihat list kegiatan yang terdaftar di aplikasi</h6>
-                </div>
-                <a href="list-kegiatan">
-                    <div class="card-footer card-primary text-center hover:bg-gray-950">
-                        Ke halaman <b>List Kegiatan</b>
-                        <i class="fas fa-arrow-right text-primary px-1"></i>
+                    <div class="dashboard-action-icon dashboard-action-icon-warning">
+                        <i class="fas fa-calendar-check"></i>
                     </div>
+                    <p class="card-title">List Kegiatan</p>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">Tinjau status verifikasi, jadwal, dan informasi kegiatan yang terdaftar.</p>
+                </div>
+                <a href="{{ route('list-kegiatan') }}" class="card-footer dashboard-action-link">
+                    Lihat semua kegiatan <i class="fas fa-arrow-right ml-1"></i>
                 </a>
             </div>
         </div>
         <div class="col-md-6 col-lg-4">
-            <div class="card card-outline card-success">
+            <div class="card dashboard-action-card">
                 <div class="card-header">
-                    <p class="card-title text-bold">Kelola Pengguna</p>
-                </div>
-                <div class="card-body custom-bg3">
-                    <h6 class="text-black font-bold mt-5 text">Kelola pengguna yang terdaftar di aplikasi</h6>
-                </div>
-                <a href="list-kegiatan">
-                    <div class="card-footer card-primary text-center hover:bg-gray-950">
-                        Ke halaman <b>Kelola Pengguna</b>
-                        <i class="fas fa-arrow-right text-primary px-1"></i>
+                    <div class="dashboard-action-icon dashboard-action-icon-success">
+                        <i class="fas fa-user-friends"></i>
                     </div>
+                    <p class="card-title">Kelola Pengguna</p>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">Kelola data jamaah dan pantau pengguna yang terdaftar di SIKAHIM.</p>
+                </div>
+                <a href="{{ route('kelola-pengguna') }}" class="card-footer dashboard-action-link">
+                    Kelola jamaah <i class="fas fa-arrow-right ml-1"></i>
                 </a>
             </div>
         </div>
     </div>
-@stop
-
-@section('adminlte_css')
-    <style>
-        .custom-bg1 {
-            background-image: url('/images/thumb1.jpg');
-            background-size: cover;
-            background-position: center;
-            position: relative;
-        }
-        
-        .custom-bg2 {
-            background-image: url('/images/thumb2.jpg');
-            background-size: cover;
-            background-position: center;
-            position: relative;
-        }
-
-        .custom-bg3 {
-            background-image: url('/images/thumb3.jpg');
-            background-size: cover;
-            background-position: center;
-            position: relative;
-        }
-
-        .custom-bg1 .custom-bg2 .custome-bg2 h6 {
-            position: relative;
-            z-index: 1;
-        }
-    </style>
 @stop
 
 @section('footer')

@@ -6,15 +6,23 @@
     <x-header title="Buat Kegiatan" breadcrumb="Buat Kegiatan" />
 @stop
 
+@section('plugins.Select2', true)
+@section('plugins.Sweetalert2', true)
+@section('plugins.BsCustomFileInput', true)
+@section('plugins.TempusDominusBs4', true)
+
 @section('content')
-    @section('plugins.Select2', true)
-    @section('plugins.Sweetalert2', true)
-    @section('plugins.BsCustomFileInput', true)
-    @section('plugins.TempusDominusBs4', true)
-    
     <form action="{{ route('kegiatan.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <div class="row">
             <!-- Bagian Kiri -->
             <div class="col-md-6">
@@ -88,7 +96,7 @@
                         @php
                             $configStart = ['format' => 'YYYY-MM-DD HH:mm'];
                         @endphp
-                        <x-adminlte-input-date name="datetime_started" :config="$configStart" placeholder="Pilih Tanggal"
+                        <x-adminlte-input-date name="datetime_started" :config="$configStart" :value="$startAt" placeholder="Pilih Tanggal"
                             label="Tanggal Mulai" label-class="text-dark" required>
                             <x-slot name="appendSlot">
                                 <x-adminlte-button theme="outline-dark" icon="fas fa-lg fa-calendar"
@@ -100,7 +108,7 @@
                         @php
                             $configFinished = ['format' => 'YYYY-MM-DD HH:mm'];
                         @endphp
-                        <x-adminlte-input-date name="datetime_finished" :config="$configFinished" placeholder="Pilih Tanggal"
+                        <x-adminlte-input-date name="datetime_finished" :config="$configFinished" :value="$endAt" placeholder="Pilih Tanggal"
                             label="Tanggal Selesai" label-class="text-dark" required>
                             <x-slot name="appendSlot">
                                 <x-adminlte-button theme="outline-dark" icon="fas fa-lg fa-calendar"
@@ -134,7 +142,7 @@
                     <textarea class="form-control" id="deskripsi" name="description" rows="4" placeholder="Deskripsi Kegiatan" required></textarea>
                 </div>
 
-                <button type="submit" class="btn btn-primary mb-5 id=submitBtn">Submit</button>
+                <button type="submit" id="submitBtn" class="btn btn-primary mb-5">Submit</button>
             </div>
         </div>
     </form>
@@ -142,58 +150,4 @@
 
 @section('footer')
     @include('components.footer')
-@endsection
-
-@section('js')
-    <script>
-        $(document).ready(function() {
-            // Handling submit button
-            $('#submitBtn').click(function(e) {
-                e.preventDefault();
-
-                // Validasi data yang wajib diisi
-                var isValid = true;
-
-                if ($('#nama_kegiatan').val() === '') {
-                    isValid = false;
-                }
-                if ($('#kategori').val() === null) {
-                    isValid = false;
-                }
-                if ($('#penyelenggara').val() === '') {
-                    isValid = false;
-                }
-                if ($('#tanggal_mulai').val() === '') {
-                    isValid = false;
-                }
-                if ($('#tanggal_selesai').val() === '') {
-                    isValid = false;
-                }
-                if ($('#kuota').val() === '') {
-                    isValid = false;
-                }
-                if ($('#lokasi').val() === '') {
-                    isValid = false;
-                }
-                if ($('#deskripsi').val() === '') {
-                    isValid = false;
-                }
-
-                // Jika semua data wajib diisi, tampilkan SweetAlert2
-                if (isValid) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Kegiatan Berhasil Dibuat',
-                        text: 'Data kegiatan telah berhasil disubmit.',
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Pastikan semua data yang wajib diisi telah terisi!',
-                    });
-                }
-            });
-        });
-    </script>
 @endsection

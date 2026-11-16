@@ -1,4 +1,3 @@
 <footer>
-    <p class="m-0 text-center">Build with Laravel v{{ Illuminate\Foundation\Application::VERSION }} 
-        (PHP v{{ PHP_VERSION }})</p>
+    <p class="m-0 text-center text-muted">SIKAHIM &mdash; Sistem Informasi Kegiatan dan Agenda Harian Masjid</p>
 </footer>

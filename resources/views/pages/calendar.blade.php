@@ -7,18 +7,33 @@
 @stop
 
 @section('content')
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-3">
+        <div>
+            <h2 class="h4 mb-1">Agenda Masjid</h2>
+            <p class="text-muted mb-0">Klik tanggal kosong untuk membuat kegiatan pada hari tersebut.</p>
+        </div>
+        <a class="btn btn-primary mt-3 mt-md-0" href="{{ route('create-kegiatan') }}">
+            <i class="fas fa-plus mr-1"></i> Buat Kegiatan
+        </a>
+    </div>
     <div class="row">
         <div class="col-md-3">
-            <div class="card card-primary">
-                <div class="card-body p-2">
-                    <div class="position-relative">
-                        Kegiatan
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="h6">Petunjuk</h3>
+                    <div class="small text-muted mb-3">
+                        <i class="fas fa-mouse-pointer text-success mr-2"></i>
+                        Pilih tanggal pada kalender untuk mengatur waktu mulai kegiatan.
+                    </div>
+                    <div class="small text-muted">
+                        <i class="fas fa-info-circle text-success mr-2"></i>
+                        Kegiatan baru akan berstatus menunggu verifikasi.
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-9">
-            <div class="card card-primary">
+        <div class="col-md-9 mt-3 mt-md-0">
+            <div class="card">
                 <div class="card-body p-0">
                     <div id="calendar"></div>
                 </div>
@@ -42,9 +57,12 @@
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
             initialView: 'dayGridMonth',
-            events: '/admin/list-kegiatan',
-            editable: true,
-            droppable: true,
+            events: @json($events),
+            selectable: true,
+            dateClick: function(info) {
+                var url = @json(route('create-kegiatan'));
+                window.location.href = url + '?start=' + encodeURIComponent(info.dateStr);
+            },
         });
         calendar.render();
     });

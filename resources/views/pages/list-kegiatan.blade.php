@@ -25,24 +25,24 @@ $heads = [
             
             $config = [
                 'data' => $kegiatan->map(function ($item) {
-                    $btnEdit = '<button class="btn btn-xs btn-default text-primary mx-1 shadow" title="Edit">
-                                    <i class="fa fa-lg fa-fw fa-pen"></i>
-                                </button>';
+                    $btnEdit = '<a class="btn btn-xs btn-default text-primary mx-1 shadow" href="' . route('detail-kegiatan', $item) . '" title="Detail">
+                                <i class="fa fa-lg fa-fw fa-eye"></i>
+                            </a>';
                     $btnDelete = '<button class="btn btn-xs btn-default text-danger mx-1 shadow delete-btn" data-id="' . $item->activity_id . '" title="Delete">
                                     <i class="fa fa-lg fa-fw fa-trash"></i>
                                 </button>';
-                    $btnDetails = '<button class="btn btn-xs btn-default text-teal mx-1 shadow" title="Details">
-                                    <i class="fa fa-lg fa-fw fa-eye"></i>
-                                </button>';
+                    $btnDetails = '<a class="btn btn-xs btn-default text-teal mx-1 shadow" href="' . route('evaluation', $item) . '" title="Evaluasi">
+                                    <i class="fa fa-lg fa-fw fa-star"></i>
+                                </a>';
                     return [
                         $item->activity_name,
-                        $item->Kategori->category_name ?? 'Tidak Ada Kategori',
+                        $item->kategori->category_name ?? 'Tidak Ada Kategori',
                         $item->datetime_started->format('Y-m-d'),
                         $item->location,
                         $item->penyelenggara,
                         $item->max_participant ?? 'Tidak Ada',
                         '<span class="badge badge-' . ($item->status == 'Selesai' ? 'success' : ($item->status == 'Berlangsung' ? 'warning' : ($item->status == 'Belum Mulai' ? 'info' : ($item->status == 'Cancelled' ? 'danger' : 'secondary')))) . '">' . $item->status . '</span>',
-                        '<span class="badge badge-' . ($item->verification == 'Terverifikasi' ? 'success' : ($item->verification == 'Ditolak' ? 'danger' : ($item->verification == 'Belum Terverifikasi' ? 'warning' : 'secondary'))) . '">' . $item->verification . '</span>',
+                        '<span class="badge badge-' . ($item->verification == 'Terverifikasi' ? 'success' : ($item->verification == 'Ditolak' ? 'danger' : 'warning')) . '">' . $item->verification . '</span>',
                         '<nobr>' . $btnEdit . $btnDelete . $btnDetails . '</nobr>',
                     ];
                 })->toArray(),

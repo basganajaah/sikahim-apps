@@ -1,66 +1,194 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SIKAHIM Apps
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**SIKAHIM** adalah singkatan dari **Sistem Informasi Kegiatan dan Agenda Harian Masjid**. Aplikasi ini membantu pengurus masjid mengelola agenda secara terpusat dan membantu jamaah menemukan serta mendaftarkan diri pada kegiatan yang tersedia.
 
-## About Laravel
+## Tentang aplikasi
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+SIKAHIM memiliki dua area utama:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Admin/pengurus:** mengelola kegiatan, kategori, tag, jadwal, kuota, materi, pengguna, pendaftaran, evaluasi, dan kalender agenda.
+- **Jamaah/user:** melihat kegiatan terverifikasi, membaca detail agenda, mendaftar sebagai peserta, dan melihat riwayat pendaftaran.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Kegiatan dapat dibuat melalui formulir biasa atau langsung dari kalender. Sistem juga melakukan validasi jadwal, kuota, status verifikasi, dan pendaftaran ganda.
 
-## Learning Laravel
+## Fitur utama
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Autentikasi login, registrasi, logout, verifikasi email, dan reset password.
+- Dashboard admin dengan ringkasan statistik.
+- CRUD kegiatan dengan kategori, tag, thumbnail, materi, lokasi, jadwal, dan kuota.
+- Kalender kegiatan terverifikasi dengan pembuatan kegiatan berdasarkan tanggal yang dipilih.
+- Pendaftaran jamaah dengan validasi kuota dan jadwal.
+- Detail kegiatan, daftar peserta, evaluasi, dan notifikasi.
+- Seeder idempotent dengan data contoh realistis.
+- Tampilan responsif berbasis AdminLTE dengan tema SIKAHIM.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Teknologi
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- PHP 8.2 atau lebih baru
+- Laravel 11
+- PostgreSQL
+- AdminLTE
+- Vite, Tailwind CSS, dan Alpine.js
 
-## Laravel Sponsors
+## Prasyarat
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Pastikan perangkat sudah memiliki:
 
-### Premium Partners
+1. PHP dan ekstensi `pdo_pgsql`.
+2. Composer.
+3. Node.js dan npm.
+4. PostgreSQL Server yang sedang berjalan.
+5. DBeaver sebagai aplikasi pengelola database PostgreSQL.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+> DBeaver hanya digunakan untuk membuat dan mengelola database. DBeaver bukan web server. Laragon juga tidak wajib dibuka; yang wajib berjalan adalah PHP/Composer dan PostgreSQL.
 
-## Contributing
+Periksa PHP dan ekstensi PostgreSQL:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```powershell
+php -v
+php -r "echo extension_loaded('pdo_pgsql') ? 'pdo_pgsql aktif' : 'pdo_pgsql belum aktif';"
+composer -V
+node -v
+npm -v
+```
 
-## Code of Conduct
+## Instalasi
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Jalankan perintah berikut dari folder repository:
 
-## Security Vulnerabilities
+```powershell
+composer install
+npm install
+Copy-Item .env.example .env
+php artisan key:generate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Menyiapkan database PostgreSQL melalui DBeaver
 
-## License
+1. Pastikan service PostgreSQL aktif.
+2. Buka DBeaver dan hubungkan ke PostgreSQL menggunakan username serta password PostgreSQL.
+3. Buat database baru, misalnya `sikahim-apps`.
+4. Buka file `.env` dan sesuaikan konfigurasi:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```dotenv
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=sikahim-apps
+DB_USERNAME=postgres
+DB_PASSWORD=password_postgresql_anda
+```
+
+Nama database pada `.env` harus sama persis dengan database yang dibuat di DBeaver. Laravel tidak membuat database PostgreSQL secara otomatis; Laravel hanya membuat tabel ketika migration dijalankan.
+
+### Migration dan data contoh
+
+```powershell
+php artisan config:clear
+php artisan migrate --seed
+php artisan storage:link
+npm.cmd run build
+```
+
+Seeder dapat dijalankan ulang karena menggunakan pola idempotent:
+
+```powershell
+php artisan db:seed
+```
+
+## Menjalankan aplikasi
+
+### Cara sederhana
+
+Jalankan server Laravel:
+
+```powershell
+php artisan serve
+```
+
+Buka [http://127.0.0.1:8000](http://127.0.0.1:8000).
+
+### Development dengan Vite
+
+Gunakan dua terminal:
+
+Terminal 1:
+
+```powershell
+php artisan serve
+```
+
+Terminal 2:
+
+```powershell
+npm.cmd run dev
+```
+
+`npm.cmd` digunakan pada sebagian instalasi Windows PowerShell ketika `npm.ps1` diblokir oleh Execution Policy.
+
+Alternatif satu perintah:
+
+```powershell
+composer run dev
+```
+
+### Akun demo
+
+Semua akun seeder menggunakan password `password`.
+
+- Admin: `admin1@example.com`
+- User: `user11@example.com`
+
+Nama pengguna pada data seed menggunakan nama dummy realistis, bukan nama anggota tim.
+
+## Alur penggunaan
+
+### Admin
+
+1. Login menggunakan akun admin.
+2. Buka dashboard untuk melihat statistik.
+3. Buat kegiatan melalui menu **Buat Kegiatan** atau klik tanggal pada **Kalender**.
+4. Lengkapi kategori, tag, jadwal, kuota, lokasi, deskripsi, thumbnail, dan materi.
+5. Periksa kegiatan pada daftar kegiatan dan kelola pengguna yang terdaftar.
+
+### User
+
+1. Registrasi atau login menggunakan akun user.
+2. Lihat kegiatan yang sudah terverifikasi dan belum selesai.
+3. Buka detail kegiatan.
+4. Isi data pendaftaran dan kirim.
+5. Pantau status pendaftaran pada riwayat kegiatan.
+
+## Validasi dan testing
+
+```powershell
+php artisan route:list
+php artisan view:cache
+php artisan test
+vendor\bin\pint --test
+npm.cmd run build
+```
+
+Test menggunakan SQLite in-memory melalui `phpunit.xml`, sehingga tidak mengubah database PostgreSQL development.
+
+## Struktur repository
+
+- `routes/web.php`: rute publik, user, dan admin.
+- `app/Http/Controllers`: logika autentikasi, kegiatan, pendaftaran, dashboard, dan pengguna.
+- `app/Models`: model dan relasi domain aplikasi.
+- `database/migrations`: struktur tabel database.
+- `database/seeders`: data contoh kategori, tag, user, kegiatan, pendaftaran, evaluasi, dan notifikasi.
+- `resources/views`: halaman, layout, dan komponen antarmuka.
+- `public/css/fonts.css`: tema warna dan styling global SIKAHIM.
+- `RINGKASAN-PERBAIKAN.md`: ringkasan teknis perubahan aplikasi.
+- `DEPLOYMENT.md`: panduan deployment gratis ke Render dengan PostgreSQL dan storage eksternal.
+
+## Anggota tim
+
+| Nama | NIM |
+|---|---:|
+| Bandyaga Adiansyah Sugandi | 231511037 |
+| Dwika Ali Ramdhan Ibrahim | 231511042 |
+| Muhammad Azzam Izzuddin | 231511054 |
+| Nino Erico Apandi Nainggolan | 231511058 |
+| Zidan Tri Satria Mukti | 231511064 |

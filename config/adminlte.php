@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'title' => 'Sikahim App',
+    'title' => 'SIKAHIM',
     'title_prefix' => '',
     'title_postfix' => '',
 
@@ -56,7 +56,6 @@ return [
         'css/fonts.css',
     ],
 
-
     /*
     |--------------------------------------------------------------------------
     | Admin Panel Logo
@@ -69,7 +68,7 @@ return [
     |
     */
 
-    'logo' => '<b>Sikahim</b>App',
+    'logo' => '<b>SIKA</b>HIM',
     'logo_img' => 'images/Logo_LukmanHakim.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
@@ -344,13 +343,13 @@ return [
                 [
                     'text' => 'Dashboard Kegiatan',
                     'url' => 'admin/dashboard-kegiatan',
-                    'icon' => 'fas fa-fw fa-th-large'
+                    'icon' => 'fas fa-fw fa-th-large',
 
                 ],
                 [
                     'text' => 'Buat Kegiatan',
                     'url' => 'admin/create-kegiatan',
-                    'icon' => 'fas fa-fw fa-plus-square'
+                    'icon' => 'fas fa-fw fa-plus-square',
 
                 ],
                 [
@@ -358,7 +357,7 @@ return [
                     'url' => 'admin/list-kegiatan',
                     'icon' => 'fas fa-fw fa-list-ul',
                 ],
-            ]
+            ],
         ],
         [
             'text' => 'Kelola Pengguna',
@@ -547,7 +546,7 @@ return [
                     'asset' => true,
                     'location' => 'vendor/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css',
                 ],
-            ]
+            ],
         ],
         'BsCustomFileInput' => [
             'active' => false,

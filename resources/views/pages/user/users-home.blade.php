@@ -1,76 +1,86 @@
 @extends('adminlte::page')
 
-@section('title', 'Sikahim | Dashboard')
+@section('title', 'SIKAHIM | Agenda Jamaah')
 
 @section('content_header')
-    <x-header title="Dashboard" breadcrumb="Dashboard" />
+    <x-header title="Agenda Jamaah" breadcrumb="Beranda" />
 @stop
 
 @section('content')
-    <div class="row">
-        <div class="col-md-6 col-lg-4">
-            <div class="card card-outline card-primary">
-                <div class="card-header">
-                    <p class="card-title text-bold">Kegiatan</p>
-                    <div class="card-tools">
-                        <span class="badge badge-primary">Baru</span>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <h2>10</h2>
-                    <h6>Kegiatan baru</h6>
-                </div>
-                <a href="list-kegiatan">
-                    <div class="card-footer card-primary text-center hover:bg-gray-950">
-                        Info selengkapnya
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-4">
-            <div class="card card-outline card-warning">
-                <div class="card-header">
-                    <p class="card-title text-bold">Kegiatan</p>
-                    <div class="card-tools">
-                        <span class="badge badge-warning">Berlangsung</span>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <h2>5</h2>
-                    <h6>Kegiatan berlangsung</h6>
-                </div>
-                <a href="list-kegiatan">
-                    <div class="card-footer card-primary text-center hover:bg-gray-950">
-                        Info selengkapnya
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-4">
-            <div class="card card-outline card-success">
-                <div class="card-header">
-                    <p class="card-title text-bold">Kegiatan</p>
-                    <div class="card-tools">
-                        <span class="badge badge-success">Selesai</span>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <h2>10</h2>
-                    <h6>Kegiatan selesai</h6>
-                </div>
-                <a href="list-kegiatan">
-                    <div class="card-footer card-primary text-center hover:bg-gray-950">
-                        Info selengkapnya
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-@stop
+    <x-page-hero
+        eyebrow="Sistem Informasi Kegiatan dan Agenda Harian Masjid"
+        title="Assalamu'alaikum, {{ auth()->user()->name }}"
+        description="Temukan kegiatan masjid yang terverifikasi dan ikut berkontribusi dalam agenda kebaikan bersama."
+        :action="route('user.pendaftaran')"
+        action-text="Lihat Pendaftaran Saya"
+    />
 
-@section('adminlte_css')
-    {{-- Add here extra stylesheets --}}
-    {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
+    @if (session('success'))
+        <div class="alert alert-success border-0 shadow-sm">
+            <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger border-0 shadow-sm">
+            <i class="fas fa-exclamation-circle mr-2"></i>{{ $errors->first() }}
+        </div>
+    @endif
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h2 class="h4 mb-1">Kegiatan Terdekat</h2>
+            <p class="text-muted mb-0">Pilih kegiatan dan daftarkan diri Anda.</p>
+        </div>
+        <span class="badge badge-light border">{{ $kegiatan->count() }} kegiatan</span>
+    </div>
+
+    <div class="row">
+        @forelse ($kegiatan as $item)
+            <div class="col-md-6 col-xl-4 mb-4">
+                <article class="card sikahim-event-card mb-0">
+                    @if ($item->thumbnail)
+                        <img class="card-img-top" style="height: 150px; object-fit: cover;" src="{{ asset('storage/' . $item->thumbnail) }}" alt="{{ $item->activity_name }}">
+                    @else
+                        <div class="d-flex align-items-center justify-content-center bg-light" style="height: 150px;">
+                            <i class="fas fa-mosque fa-3x text-muted"></i>
+                        </div>
+                    @endif
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="sikahim-event-date">{{ $item->datetime_started->format('d M Y, H:i') }}</span>
+                            <span class="badge badge-success">Terverifikasi</span>
+                        </div>
+                        <h3 class="h5">{{ $item->activity_name }}</h3>
+                        <p class="small text-muted mb-2"><i class="fas fa-map-marker-alt mr-2 text-success"></i>{{ $item->location }}</p>
+                        <p class="small text-muted mb-3"><i class="fas fa-user-friends mr-2 text-success"></i>{{ $item->remaining_slots === null ? 'Tanpa batas peserta' : $item->remaining_slots . ' slot tersisa' }}</p>
+                        <p class="text-muted small flex-grow-1">{{ \Illuminate\Support\Str::limit($item->description, 110) }}</p>
+                        <form method="POST" action="{{ route('user.pendaftaran.store', $item) }}" class="border-top pt-3">
+                            @csrf
+                            <div class="form-row">
+                                <div class="col-7"><input class="form-control form-control-sm" name="registrant_name" value="{{ old('registrant_name', auth()->user()->name) }}" placeholder="Nama peserta" required></div>
+                                <div class="col-5"><input class="form-control form-control-sm" type="number" name="age" min="1" max="120" placeholder="Usia" required></div>
+                            </div>
+                            <div class="form-row mt-2">
+                                <div class="col-7"><select class="form-control form-control-sm" name="gender" required><option value="">Jenis kelamin</option><option value="1">Laki-laki</option><option value="0">Perempuan</option></select></div>
+                                <div class="col-5"><button class="btn btn-primary btn-sm btn-block" type="submit"><i class="fas fa-hand-holding-heart mr-1"></i>Daftar</button></div>
+                            </div>
+                        </form>
+                    </div>
+                </article>
+            </div>
+        @empty
+            <div class="col-12">
+                <div class="card text-center py-5">
+                    <div class="card-body">
+                        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                        <h3 class="h5">Belum ada agenda tersedia</h3>
+                        <p class="text-muted mb-0">Kegiatan terverifikasi akan muncul di halaman ini.</p>
+                    </div>
+                </div>
+            </div>
+        @endforelse
+    </div>
 @stop
 
 @section('footer')
