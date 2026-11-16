@@ -29,6 +29,8 @@ class Kegiatan extends Model
         'location',
         'description',
         'materi',
+        'status',
+        'verification',
     ];
 
     protected $casts = [
@@ -58,7 +60,7 @@ class Kegiatan extends Model
             return null;
         }
 
-        return max(0, $this->max_participant - $this->pendaftaran()->count());
+        return max(0, $this->max_participant - ($this->pendaftaran_count ?? $this->pendaftaran()->count()));
     }
 
     public function kategori()

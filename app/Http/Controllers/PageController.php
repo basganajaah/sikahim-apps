@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Kategori;
 use App\Models\Kegiatan;
+use App\Models\Notification;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 
@@ -12,6 +13,7 @@ class PageController extends Controller
     public function userHome()
     {
         $kegiatan = Kegiatan::with(['kategori', 'tags'])
+            ->withCount('pendaftaran')
             ->where('verification', 'Terverifikasi')
             ->where('datetime_finished', '>=', now())
             ->orderBy('datetime_started')
@@ -41,13 +43,6 @@ class PageController extends Controller
             : null;
 
         return view('pages.create-kegiatan', compact('categories', 'tags', 'startAt', 'endAt'));
-    }
-
-    public function listKegiatan()
-    {
-        $kegiatans = Kegiatan::all();
-
-        return view('pages.list-kegiatan', compact('kegiatans'));
     }
 
     public function kelolaPengguna()
@@ -81,5 +76,46 @@ class PageController extends Controller
         return view('pages.evaluation', [
             'kegiatan' => $kegiatan->load('evaluasi.user'),
         ]);
+    }
+
+    public function notifications(Request $request)
+    {
+        $userId = $request->user()->id;
+        Notification::syncForUser($userId);
+
+        $items = Notification::whereHas('users', fn ($q) => $q->where('users.id', $userId))
+            ->latest('sent_at')
+            ->take(8)
+            ->get();
+
+        $unreadCount = $items->where('is_read', false)->count();
+
+        $dropdown = $items->isEmpty()
+            ? '<span class="dropdown-item text-muted text-center small py-3">Belum ada notifikasi</span>'
+            : $items->map(function (Notification $n) {
+                $weight = $n->is_read ? 'text-muted' : 'font-weight-bold';
+
+                return '<div class="dropdown-item text-wrap border-bottom py-2">'
+                    .'<div class="small '.$weight.'">'.e($n->title).'</div>'
+                    .'<div class="text-xs text-muted">'.e($n->message).'</div>'
+                    .'<div class="text-xs text-secondary mt-1">'.$n->sent_at?->diffForHumans().'</div>'
+                    .'</div>';
+            })->implode('');
+
+        return response()->json([
+            'label' => $unreadCount,
+            'label_color' => $unreadCount > 0 ? 'warning' : 'secondary',
+            'icon_color' => $unreadCount > 0 ? 'warning' : 'dark',
+            'dropdown' => $dropdown,
+        ]);
+    }
+
+    public function markNotificationsRead(Request $request)
+    {
+        Notification::whereHas('users', fn ($q) => $q->where('users.id', $request->user()->id))
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return back();
     }
 }

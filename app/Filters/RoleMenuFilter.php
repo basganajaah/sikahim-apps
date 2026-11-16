@@ -9,10 +9,8 @@ class RoleMenuFilter implements FilterInterface
 {
     public function transform($item)
     {
-        if (Auth::check()) {
-            if (isset($item['role']) && Auth::user()->role !== $item['role']) {
-                return false;
-            }
+        if (isset($item['role']) && (! Auth::check() || Auth::user()->role !== $item['role'])) {
+            $item['restricted'] = true;
         }
 
         return $item;

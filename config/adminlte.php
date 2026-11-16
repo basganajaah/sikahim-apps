@@ -314,6 +314,19 @@ return [
             'type' => 'fullscreen-widget',
             'topnav_right' => true,
         ],
+        [
+            'type' => 'navbar-notification',
+            'id' => 'sikahim-notification',
+            'icon' => 'fas fa-bell',
+            'url' => 'notifications/read',
+            'topnav_right' => true,
+            'dropdown_mode' => true,
+            'dropdown_flabel' => 'Tandai semua sudah dibaca',
+            'update_cfg' => [
+                'url' => 'notifications/get',
+                'period' => 30,
+            ],
+        ],
 
         // Sidebar items:
         [
@@ -321,14 +334,16 @@ return [
             'text' => 'search',
         ],
         [
-            'text' => 'blog',
-            'url' => 'admin/blog',
-            'can' => 'manage-blog',
-        ],
-        [
             'text' => 'Dashboard',
             'url' => 'admin/home',
             'icon' => 'fas fa-fw fa-home',
+            'role' => 'admin',
+        ],
+        [
+            'text' => 'Beranda',
+            'url' => 'users/home',
+            'icon' => 'fas fa-fw fa-home',
+            'role' => 'user',
         ],
         ['header' => 'HALAMAN'],
         [
@@ -344,13 +359,13 @@ return [
                     'text' => 'Dashboard Kegiatan',
                     'url' => 'admin/dashboard-kegiatan',
                     'icon' => 'fas fa-fw fa-th-large',
-
+                    'role' => 'admin',
                 ],
                 [
                     'text' => 'Buat Kegiatan',
                     'url' => 'admin/create-kegiatan',
                     'icon' => 'fas fa-fw fa-plus-square',
-
+                    'role' => 'admin',
                 ],
                 [
                     'text' => 'List Kegiatan',
@@ -381,13 +396,13 @@ return [
 
     'filters' => [
         JeroenNoten\LaravelAdminLte\Menu\Filters\GateFilter::class,
+        App\Filters\RoleMenuFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\HrefFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\SearchFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\ActiveFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\ClassesFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\LangFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\DataFilter::class,
-        App\Filters\RoleMenuFilter::class,
     ],
 
     /*

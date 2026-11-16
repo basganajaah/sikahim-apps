@@ -5,13 +5,13 @@
     <form method="POST" action="{{ route('login') }}" class="max-w-md mx-auto">
         @csrf
 
-        <!-- Email Address -->
+        <!-- Email Address or Username -->
         <div>
-            <x-input-label for="email" :value="__('Email')" />
+            <x-input-label for="email" :value="__('Email atau Username')" />
             <x-text-input
                 id="email"
                 class="block mt-1 w-full border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                type="email"
+                type="text"
                 name="email"
                 :value="old('email')"
                 required

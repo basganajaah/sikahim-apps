@@ -23,14 +23,17 @@ $heads = [
                 ['label' => 'Aksi', 'no-export' => true, 'width' => 10],
             ];
             
+            $isAdmin = auth()->user()?->role === 'admin';
             $config = [
-                'data' => $kegiatan->map(function ($item) {
+                'data' => $kegiatan->map(function ($item) use ($isAdmin) {
                     $btnEdit = '<a class="btn btn-xs btn-default text-primary mx-1 shadow" href="' . route('detail-kegiatan', $item) . '" title="Detail">
                                 <i class="fa fa-lg fa-fw fa-eye"></i>
                             </a>';
-                    $btnDelete = '<button class="btn btn-xs btn-default text-danger mx-1 shadow delete-btn" data-id="' . $item->activity_id . '" title="Delete">
-                                    <i class="fa fa-lg fa-fw fa-trash"></i>
-                                </button>';
+                    $btnDelete = $isAdmin
+                        ? '<button class="btn btn-xs btn-default text-danger mx-1 shadow delete-btn" data-id="' . $item->activity_id . '" title="Delete">
+                                <i class="fa fa-lg fa-fw fa-trash"></i>
+                            </button>'
+                        : '';
                     $btnDetails = '<a class="btn btn-xs btn-default text-teal mx-1 shadow" href="' . route('evaluation', $item) . '" title="Evaluasi">
                                     <i class="fa fa-lg fa-fw fa-star"></i>
                                 </a>';
@@ -59,7 +62,6 @@ $heads = [
 @endsection
 
 @section('js')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).on('click', '.delete-btn', function() {
             var kegiatanId = $(this).data('id'); // Mendapatkan ID kegiatan
@@ -76,7 +78,7 @@ $heads = [
                 if (result.isConfirmed) {
                     // Jika dikonfirmasi, kirim request delete ke server
                     $.ajax({
-                        url: '/kegiatan/' + kegiatanId,
+                        url: '{{ url('/admin/kegiatan') }}/' + kegiatanId,
                         type: 'DELETE',
                         data: {
                             "_token": "{{ csrf_token() }}",

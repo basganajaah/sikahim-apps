@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kegiatan;
+use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -59,6 +61,12 @@ class KegiatanController extends Controller
 
             $kegiatan->tags()->sync($validated['sel2Category'] ?? []);
 
+            Notification::notifyUsers(
+                User::pluck('id'),
+                "Kegiatan Baru: {$kegiatan->activity_name}",
+                "Kegiatan baru {$kegiatan->activity_name} pada {$kegiatan->datetime_started->format('d M Y H:i')} di {$kegiatan->location}."
+            );
+
             return $kegiatan;
         });
 
@@ -66,9 +74,37 @@ class KegiatanController extends Controller
             ->with('success', "Kegiatan {$kegiatan->activity_name} berhasil dibuat dan menunggu verifikasi.");
     }
 
-    public function destroy(Kegiatan $kegiatan): RedirectResponse
+    public function updateStatus(Request $request, Kegiatan $kegiatan): RedirectResponse
+    {
+        $validated = $request->validate([
+            'verification' => ['required', 'in:Menunggu verifikasi,Terverifikasi,Ditolak'],
+            'status' => ['required', 'in:Belum Mulai,Berlangsung,Selesai,Ditunda'],
+        ]);
+
+        $kegiatan->update($validated);
+
+        if ($validated['verification'] === 'Terverifikasi') {
+            Notification::notifyUsers(
+                User::pluck('id'),
+                "Kegiatan Baru: {$kegiatan->activity_name}",
+                "Kegiatan {$kegiatan->activity_name} pada {$kegiatan->datetime_started->format('d M Y H:i')} di {$kegiatan->location} telah dibuka."
+            );
+        }
+
+        if ($validated['status'] === 'Berlangsung') {
+            Notification::syncForUser();
+        }
+
+        return back()->with('success', 'Status kegiatan berhasil diperbarui.');
+    }
+
+    public function destroy(Request $request, Kegiatan $kegiatan)
     {
         $kegiatan->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Kegiatan berhasil dihapus.']);
+        }
 
         return redirect()->route('list-kegiatan')->with('success', 'Kegiatan berhasil dihapus.');
     }
