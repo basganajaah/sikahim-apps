@@ -40,7 +40,7 @@
             <div class="col-md-6 col-xl-4 mb-4">
                 <article class="card sikahim-event-card mb-0">
                     @if ($item->thumbnail)
-                        <img class="card-img-top" style="height: 150px; object-fit: cover;" src="{{ asset('storage/' . $item->thumbnail) }}" alt="{{ $item->activity_name }}">
+                        <img class="card-img-top" style="height: 150px; object-fit: cover;" src="{{ Storage::disk(config('filesystems.upload_disk', 'public'))->url($item->thumbnail) }}" alt="{{ $item->activity_name }}">
                     @else
                         <div class="d-flex align-items-center justify-content-center bg-light" style="height: 150px;">
                             <i class="fas fa-mosque fa-3x text-muted"></i>

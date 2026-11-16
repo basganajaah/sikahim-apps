@@ -4,13 +4,13 @@ Dokumen ini menjelaskan persiapan deployment SIKAHIM ke internet menggunakan lay
 
 ## Arsitektur yang digunakan
 
-| Kebutuhan | Layanan | Keterangan |
-|---|---|---|
-| Source code | GitHub | Repository harus memiliki branch utama `main`. |
-| Web Laravel | Render Free Web Service | Menjalankan aplikasi Laravel menggunakan Docker. |
-| PostgreSQL | Neon Free atau Supabase Free | Database production yang dapat diakses dari Render. |
-| File upload | Supabase Storage Free | Menyimpan thumbnail dan materi secara eksternal. |
-| Database client | DBeaver | Opsional, untuk melihat database production. |
+| Kebutuhan       | Layanan                      | Keterangan                                          |
+| --------------- | ---------------------------- | --------------------------------------------------- |
+| Source code     | GitHub                       | Repository harus memiliki branch utama `main`.    |
+| Web Laravel     | Render Free Web Service      | Menjalankan aplikasi Laravel menggunakan Docker.    |
+| PostgreSQL      | Neon Free atau Supabase Free | Database production yang dapat diakses dari Render. |
+| File upload     | Supabase Storage Free        | Menyimpan thumbnail dan materi secara eksternal.    |
+| Database client | DBeaver                      | Opsional, untuk melihat database production.        |
 
 Render Free dapat sleep setelah tidak ada traffic. Supabase dan Neon juga memiliki batas kuota serta dapat menonaktifkan resource yang lama tidak digunakan. Konfigurasi ini ditujukan untuk demo atau tugas, bukan production dengan SLA.
 
@@ -86,19 +86,15 @@ Untuk konfigurasi paling sederhana, gunakan **Supabase Free** agar database dan 
 
 Jangan memasukkan secret key ke GitHub.
 
-## 4. Persiapan storage upload
+## 4. Konfigurasi storage upload
 
 Render Free memiliki filesystem ephemeral. File yang disimpan ke `storage/app/public` dapat hilang ketika service restart, sleep, atau redeploy.
 
-Repository ini saat ini menyimpan file kegiatan menggunakan disk lokal `public` pada `KegiatanController`. Sebelum mengaktifkan upload di deployment publik, storage upload perlu diarahkan ke Supabase Storage melalui disk S3-compatible.
+Repository ini menyediakan konfigurasi `FILESYSTEM_UPLOAD_DISK`. Di lokal nilainya tetap `public`; di Render nilainya dapat diubah menjadi `s3` tanpa mengubah source code.
 
-### Paket yang diperlukan
+### Adapter S3
 
-Tambahkan adapter S3 Laravel:
-
-```powershell
-composer require league/flysystem-aws-s3-v3 "^3.0"
-```
+Adapter `league/flysystem-aws-s3-v3` sudah tercantum di `composer.json`, sehingga Render akan memasangnya ketika menjalankan `composer install`.
 
 ### Konfigurasi environment storage
 
@@ -106,6 +102,7 @@ Gunakan variable berikut pada Render:
 
 ```dotenv
 FILESYSTEM_DISK=s3
+FILESYSTEM_UPLOAD_DISK=s3
 
 AWS_ACCESS_KEY_ID=isi_s3_access_key_supabase
 AWS_SECRET_ACCESS_KEY=isi_s3_secret_key_supabase
@@ -118,22 +115,7 @@ AWS_USE_PATH_STYLE_ENDPOINT=true
 
 `PROJECT_REF` diganti dengan project reference Supabase.
 
-### Catatan kompatibilitas aplikasi
-
-Kode upload harus menggunakan disk yang sama dengan konfigurasi deployment:
-
-```php
-$file->store('thumbnails', 's3');
-$file->store('materi', 's3');
-```
-
-URL file juga harus dibuat melalui Laravel Storage, bukan melalui URL lokal `/storage`:
-
-```php
-Storage::disk('s3')->url($kegiatan->thumbnail);
-```
-
-Jangan menggunakan `asset('storage/...')` untuk file yang disimpan di Supabase Storage. Setelah perubahan storage selesai, jalankan test dan build ulang sebelum push ke `main`.
+Kode upload dan URL thumbnail sudah membaca disk yang dikonfigurasi melalui `FILESYSTEM_UPLOAD_DISK`. Jangan menggunakan `asset('storage/...')` untuk file yang disimpan di Supabase Storage.
 
 ## 5. Menyiapkan Docker untuk Render
 
@@ -146,7 +128,7 @@ Render menjalankan Laravel melalui Docker. Repository harus memiliki:
 
 Gunakan panduan resmi Render untuk Laravel Docker:
 
-<https://render.com/docs/deploy-php-laravel-docker>
+[https://render.com/docs/deploy-php-laravel-docker](https://render.com/docs/deploy-php-laravel-docker)
 
 Konfigurasi container wajib:
 
