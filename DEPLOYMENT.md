@@ -162,6 +162,7 @@ APP_ENV=production
 APP_DEBUG=false
 APP_KEY=base64:hasil_php_artisan_key_generate_show
 APP_URL=https://nama-service.onrender.com
+ASSET_URL=https://nama-service.onrender.com
 LOG_CHANNEL=stderr
 
 DB_CONNECTION=pgsql
