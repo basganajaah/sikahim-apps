@@ -30,17 +30,17 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 
-    public function test_users_can_authenticate_using_username(): void
+    public function test_users_cannot_authenticate_using_username(): void
     {
-        $user = User::factory()->create(['name' => 'jamaah_masjid']);
+        User::factory()->create(['name' => 'jamaah_masjid']);
 
         $response = $this->post('/login', [
             'email' => 'jamaah_masjid',
             'password' => 'password',
         ]);
 
-        $this->assertAuthenticatedAs($user);
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertSessionHasErrors('email');
+        $this->assertGuest();
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void

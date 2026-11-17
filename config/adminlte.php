@@ -51,11 +51,6 @@ return [
         'allowed' => true,
     ],
 
-    'adminlte_css_pre' => [
-        'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap',
-        'css/fonts.css',
-    ],
-
     /*
     |--------------------------------------------------------------------------
     | Admin Panel Logo
@@ -68,9 +63,9 @@ return [
     |
     */
 
-    'logo' => '<b>SIKA</b>HIM',
+    'logo' => 'SIKAHIM',
     'logo_img' => 'images/Logo_LukmanHakim.png',
-    'logo_img_class' => 'brand-image img-circle elevation-3',
+    'logo_img_class' => 'brand-image img-circle',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
     'logo_img_alt' => 'Admin Logo',
@@ -115,11 +110,11 @@ return [
     */
 
     'preloader' => [
-        'enabled' => true,
+        'enabled' => false,
         'mode' => 'fullscreen',
         'img' => [
-            'path' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
-            'alt' => 'AdminLTE Preloader Image',
+            'path' => 'images/Logo_LukmanHakim.png',
+            'alt' => 'SIKAHIM',
             'effect' => 'animation__shake',
             'width' => 60,
             'height' => 60,
@@ -201,7 +196,7 @@ return [
     'classes_content_wrapper' => '',
     'classes_content_header' => '',
     'classes_content' => '',
-    'classes_sidebar' => 'sidebar-dark-primary elevation-4',
+    'classes_sidebar' => 'sidebar-dark-primary',
     'classes_sidebar_nav' => '',
     'classes_topnav' => 'navbar-white navbar-light',
     'classes_topnav_nav' => 'navbar-expand',
@@ -351,7 +346,7 @@ return [
             'icon' => 'fas fa-fw fa-clipboard-check',
             'role' => 'user',
         ],
-        ['header' => 'HALAMAN'],
+        ['header' => 'Kegiatan & data'],
         [
             'text' => 'Kalender',
             'url' => 'admin/calendar',
@@ -403,16 +398,6 @@ return [
             'url' => 'admin/audit-logs',
             'icon' => 'fas fa-fw fa-history',
             'role' => 'admin',
-        ],
-        [
-            'text' => 'Notifikasi',
-            'url' => 'notifications',
-            'icon' => 'fas fa-fw fa-bell',
-        ],
-        [
-            'text' => 'Profil',
-            'url' => 'profile',
-            'icon' => 'fas fa-fw fa-user-cog',
         ],
     ],
 
@@ -619,6 +604,22 @@ return [
                     'type' => 'js',
                     'asset' => false,
                     'location' => '//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js',
+                ],
+            ],
+        ],
+        // Keep last so it loads after every other plugin stylesheet.
+        'SikahimTheme' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => true,
+                    'location' => 'css/sikahim.css',
                 ],
             ],
         ],

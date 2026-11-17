@@ -10,7 +10,7 @@
     <x-page-hero
         eyebrow="Sistem Informasi Kegiatan dan Agenda Harian Masjid"
         title="Assalamu'alaikum, {{ auth()->user()->name }}"
-        description="Temukan kegiatan masjid yang terverifikasi dan ikut berkontribusi dalam agenda kebaikan bersama."
+        description="Berikut kegiatan masjid yang sudah diverifikasi pengurus. Pilih satu, isi data peserta, lalu tekan Daftar."
         :action="route('user.pendaftaran')"
         action-text="Lihat Pendaftaran Saya"
     />
@@ -79,8 +79,8 @@
 
     <div class="d-flex align-items-center justify-content-between mb-3">
         <div>
-            <h2 class="h4 mb-1">Kegiatan Terdekat</h2>
-            <p class="text-muted mb-0">Pilih kegiatan dan daftarkan diri Anda.</p>
+            <h2 class="h5 mb-1">Kegiatan terdekat</h2>
+            <p class="text-muted mb-0">Isi formulir di kartu kegiatan untuk mendaftar.</p>
         </div>
         <span class="badge badge-light border">{{ $kegiatan->count() }} kegiatan</span>
     </div>
@@ -92,9 +92,7 @@
                     @if ($item->thumbnail)
                         <img class="card-img-top" style="height: 150px; object-fit: cover;" src="{{ asset('storage/' . $item->thumbnail) }}" alt="{{ $item->activity_name }}">
                     @else
-                        <div class="d-flex align-items-center justify-content-center bg-light" style="height: 150px;">
-                            <i class="fas fa-mosque fa-3x text-muted"></i>
-                        </div>
+                        <div class="sk-thumb-placeholder" role="img" aria-label="Belum ada foto kegiatan"></div>
                     @endif
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-start mb-3">

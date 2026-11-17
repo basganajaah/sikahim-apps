@@ -18,8 +18,8 @@
     />
 
     <div class="mb-3 text-right">
-        <a href="{{ route('laporan.export-csv') }}" class="btn btn-success btn-sm">
-            <i class="fas fa-file-csv mr-1"></i> Export Laporan (CSV/Excel)
+        <a href="{{ route('laporan.export-csv') }}" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-file-csv mr-1"></i> Unduh laporan (CSV)
         </a>
     </div>
 
@@ -28,28 +28,28 @@
             <div class="small-box bg-white">
                 <div class="inner"><h3>{{ $totalKegiatan }}</h3><p>Total Kegiatan</p></div>
                 <div class="icon metric-icon-primary"><i class="fas fa-calendar-alt"></i></div>
-                <a href="{{ route('list-kegiatan') }}" class="small-box-footer">Lihat kegiatan <i class="fas fa-arrow-right"></i></a>
+                <a href="{{ route('list-kegiatan') }}" class="small-box-footer">Lihat kegiatan</a>
             </div>
         </div>
         <div class="col-sm-6 col-xl-3">
             <div class="small-box bg-white">
                 <div class="inner"><h3>{{ $pendingKegiatan }}</h3><p>Menunggu Verifikasi</p></div>
                 <div class="icon metric-icon-warning"><i class="fas fa-hourglass-half"></i></div>
-                <a href="{{ route('list-kegiatan') }}" class="small-box-footer">Periksa sekarang <i class="fas fa-arrow-right"></i></a>
+                <a href="{{ route('list-kegiatan') }}" class="small-box-footer">Periksa sekarang</a>
             </div>
         </div>
         <div class="col-sm-6 col-xl-3">
             <div class="small-box bg-white">
                 <div class="inner"><h3>{{ $totalPendaftaran }}</h3><p>Total Pendaftaran</p></div>
                 <div class="icon metric-icon-success"><i class="fas fa-users"></i></div>
-                <a href="{{ route('kelola-pendaftaran') }}" class="small-box-footer">Kelola peserta <i class="fas fa-arrow-right"></i></a>
+                <a href="{{ route('kelola-pendaftaran') }}" class="small-box-footer">Kelola peserta</a>
             </div>
         </div>
         <div class="col-sm-6 col-xl-3">
             <div class="small-box bg-white">
                 <div class="inner"><h3>{{ $totalPengguna }}</h3><p>Jamaah Terdaftar</p></div>
                 <div class="icon metric-icon-info"><i class="fas fa-user-friends"></i></div>
-                <a href="{{ route('kelola-pengguna') }}" class="small-box-footer">Kelola jamaah <i class="fas fa-arrow-right"></i></a>
+                <a href="{{ route('kelola-pengguna') }}" class="small-box-footer">Kelola jamaah</a>
             </div>
         </div>
     </div>
@@ -138,8 +138,8 @@
 
     <div class="d-flex align-items-center mb-3">
         <div>
-            <h2 class="h4 mb-1">Akses Cepat</h2>
-            <p class="text-muted mb-0">Kelola operasional masjid dengan lebih terarah.</p>
+            <h2 class="h5 mb-1">Pintasan</h2>
+            <p class="text-muted mb-0">Tugas pengurus yang paling sering dibuka.</p>
         </div>
     </div>
     <div class="row">
@@ -152,10 +152,10 @@
                     <p class="card-title">Buat Kegiatan</p>
                 </div>
                 <div class="card-body">
-                    <p class="mb-0">Mulai membuat kegiatan baru di aplikasi dengan jadwal, kategori, kuota, dan materi.</p>
+                    <p class="mb-0">Isi jadwal, kategori, kuota peserta, dan lampiran materi.</p>
                 </div>
                 <a href="{{ route('create-kegiatan') }}" class="card-footer dashboard-action-link">
-                    Buat kegiatan sekarang <i class="fas fa-arrow-right ml-1"></i>
+                    Buat kegiatan
                 </a>
             </div>
         </div>
@@ -171,7 +171,7 @@
                     <p class="mb-0">Tinjau status verifikasi, jadwal, dan informasi kegiatan yang terdaftar.</p>
                 </div>
                 <a href="{{ route('list-kegiatan') }}" class="card-footer dashboard-action-link">
-                    Lihat semua kegiatan <i class="fas fa-arrow-right ml-1"></i>
+                    Lihat semua kegiatan
                 </a>
             </div>
         </div>
@@ -187,7 +187,7 @@
                     <p class="mb-0">Kelola data jamaah dan pantau pengguna yang terdaftar di SIKAHIM.</p>
                 </div>
                 <a href="{{ route('kelola-pengguna') }}" class="card-footer dashboard-action-link">
-                    Kelola jamaah <i class="fas fa-arrow-right ml-1"></i>
+                    Kelola jamaah
                 </a>
             </div>
         </div>
@@ -199,6 +199,10 @@
         document.addEventListener('DOMContentLoaded', function () {
             if (typeof Chart === 'undefined') return;
 
+            Chart.defaults.global.defaultFontFamily = '"Hanken Grotesk", system-ui, sans-serif';
+            Chart.defaults.global.defaultFontColor = '#4A524B';
+            Chart.defaults.global.legend.display = false;
+
             var ctxMonthly = document.getElementById('chartKegiatanBulanan');
             if (ctxMonthly) {
                 new Chart(ctxMonthly.getContext('2d'), {
@@ -207,7 +211,7 @@
                         labels: @json($monthlyLabels ?? []),
                         datasets: [{
                             label: 'Jumlah Kegiatan',
-                            backgroundColor: '#0f766e',
+                            backgroundColor: '#2F6A4F',
                             data: @json($monthlyData ?? [])
                         }]
                     }
@@ -222,7 +226,7 @@
                         labels: @json($pendaftaranLabels ?? []),
                         datasets: [{
                             label: 'Jumlah Pendaftar',
-                            backgroundColor: '#1d4ed8',
+                            backgroundColor: '#C8952F',
                             data: @json($pendaftaranData ?? [])
                         }]
                     }
