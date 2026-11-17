@@ -90,7 +90,7 @@
             <div class="col-md-6 col-xl-4 mb-4">
                 <article class="card sikahim-event-card mb-0">
                     @if ($item->thumbnail)
-                        <img class="card-img-top" style="height: 150px; object-fit: cover;" src="{{ asset('storage/' . $item->thumbnail) }}" alt="{{ $item->activity_name }}">
+                        <img class="card-img-top" style="height: 150px; object-fit: cover;" src="{{ Storage::disk(config('filesystems.upload_disk', 'public'))->url($item->thumbnail) }}" alt="{{ $item->activity_name }}">
                     @else
                         <div class="sk-thumb-placeholder" role="img" aria-label="Belum ada foto kegiatan"></div>
                     @endif

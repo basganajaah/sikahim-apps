@@ -51,14 +51,15 @@ class KegiatanController extends Controller
         ]);
 
         $kegiatan = DB::transaction(function () use ($request, $validated) {
+            $uploadDisk = config('filesystems.upload_disk', 'public');
             $materiPaths = collect($request->file('materi', []))
-                ->map(fn ($file) => $file->store('materi', 'public'))
+                ->map(fn ($file) => $file->store('materi', $uploadDisk))
                 ->values()
                 ->all();
 
             $kegiatan = Kegiatan::create([
                 'id' => $request->user()->id,
-                'thumbnail' => $request->file('thumbnail')?->store('thumbnails', 'public'),
+                'thumbnail' => $request->file('thumbnail')?->store('thumbnails', $uploadDisk),
                 'materi' => $materiPaths ?: null,
                 'activity_name' => $validated['activity_name'],
                 'penyelenggara' => $validated['penyelenggara'],
