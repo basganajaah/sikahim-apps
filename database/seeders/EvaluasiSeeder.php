@@ -20,6 +20,7 @@ class EvaluasiSeeder extends Seeder
             [
                 'rating' => 5,
                 'review' => 'Kegiatan berjalan dengan baik dan bermanfaat bagi jamaah.',
+                'created_at' => now(),
                 'updated_at' => now(),
             ]
         );

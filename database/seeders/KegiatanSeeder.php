@@ -91,6 +91,7 @@ class KegiatanSeeder extends Seeder
                     'description' => $activity['description'],
                     'status' => $activity['status'],
                     'verification' => $activity['verification'],
+                    'created_at' => now(),
                     'updated_at' => now(),
                 ]
             );

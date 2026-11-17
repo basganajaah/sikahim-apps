@@ -26,6 +26,7 @@ class PendaftaranSeeder extends Seeder
                         'gender' => $userIndex % 2 === 0,
                         'registration_date' => now()->toDateString(),
                         'registration_status' => 'Terdaftar',
+                        'created_at' => now(),
                         'updated_at' => now(),
                     ]
                 );

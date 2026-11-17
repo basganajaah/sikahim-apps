@@ -33,7 +33,7 @@ class TagSeeder extends Seeder
         foreach ($tags as $tag) {
             DB::table('tag')->updateOrInsert(
                 ['tag_name' => $tag['tag_name']],
-                $tag
+                array_merge($tag, ['created_at' => now(), 'updated_at' => now()])
             );
         }
     }

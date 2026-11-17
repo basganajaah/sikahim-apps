@@ -10,13 +10,36 @@
     @section('plugins.Datatables', true)
     @section('plugins.DatatablesPlugins', true)
 
+    @if (session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="GET" action="{{ route('kelola-pengguna') }}" class="form-inline">
+                <label for="role" class="mr-2">Filter Role:</label>
+                <select name="role" id="role" class="form-control form-control-sm mr-2">
+                    <option value="">Semua Role</option>
+                    <option value="user" @selected(request('role') === 'user')>User (Jamaah)</option>
+                    <option value="admin" @selected(request('role') === 'admin')>Admin</option>
+                </select>
+                <button type="submit" class="btn btn-primary btn-sm mr-2">Terapkan</button>
+                <a href="{{ route('kelola-pengguna') }}" class="btn btn-secondary btn-sm">Reset</a>
+            </form>
+        </div>
+    </div>
+
     @php
         $heads = [
             'ID',
             'Username',
-            ['label' => 'Email', 'width' => 40],
-            ['label' => 'Actions', 'no-export' => true, 'width' => 5],
+            ['label' => 'Email', 'width' => 30],
+            'Role',
+            'Status',
+            ['label' => 'Actions', 'no-export' => true, 'width' => 12],
         ];
+
+        $ajaxUrl = route('users.index', array_filter(['role' => request('role')]));
 
         $config = [
             'order' => [[1, 'asc']],
@@ -24,9 +47,11 @@
                 ['data' => 'id'],
                 ['data' => 'name'],
                 ['data' => 'email'],
+                ['data' => 'role'],
+                ['data' => 'status'],
                 ['data' => 'actions', 'orderable' => false],
             ],
-            'ajax' => route('users.index'),
+            'ajax' => $ajaxUrl,
         ];
     @endphp
 
@@ -39,7 +64,6 @@
 @endsection
 
 @section('js')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).on('click', '.delete-btn', function() {
             var userId = $(this).data('id');
@@ -54,7 +78,6 @@
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Jika dikonfirmasi, kirim request delete ke server
                     $.ajax({
                         url: '{{ url('/admin/users') }}/' + userId,
                         type: 'DELETE',
@@ -62,20 +85,11 @@
                             "_token": "{{ csrf_token() }}",
                         },
                         success: function(response) {
-                            Swal.fire(
-                                'Dihapus!',
-                                response.message,
-                                'success'
-                            )
-                            // Refresh atau hapus row yang telah dihapus dari tabel
-                            location.reload(); // Refresh halaman untuk melihat perubahan
+                            Swal.fire('Dihapus!', response.message, 'success');
+                            location.reload();
                         },
-                        error: function(response) {
-                            Swal.fire(
-                                'Gagal!',
-                                'Terjadi kesalahan saat menghapus pengguna.',
-                                'error'
-                            );
+                        error: function() {
+                            Swal.fire('Gagal!', 'Terjadi kesalahan saat menghapus pengguna.', 'error');
                         }
                     });
                 }

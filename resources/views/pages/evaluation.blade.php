@@ -7,8 +7,66 @@
 @stop
 
 @section('content')
+    @if (session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3 class="card-title mb-0">Beri Evaluasi: {{ $kegiatan->activity_name }}</h3>
+        </div>
+        <div class="card-body">
+            @if ($kegiatan->status !== 'Selesai')
+                <div class="alert alert-info mb-0">
+                    Evaluasi hanya dapat diisi setelah kegiatan berstatus <strong>Selesai</strong> (Status saat ini: {{ $kegiatan->status }}).
+                </div>
+            @elseif (!($isRegistered ?? false))
+                <div class="alert alert-warning mb-0">
+                    Anda hanya dapat mengisi evaluasi jika terdaftar sebagai peserta pada kegiatan ini.
+                </div>
+            @elseif ($hasEvaluated ?? false)
+                <div class="alert alert-success mb-0">
+                    Terima kasih, Anda sudah mengirimkan evaluasi untuk kegiatan ini.
+                </div>
+            @else
+                <form method="POST" action="{{ route('evaluation.store', $kegiatan) }}">
+                    @csrf
+                    <div class="form-group">
+                        <label for="rating">Rating (1 - 5)</label>
+                        <select name="rating" id="rating" class="form-control" required>
+                            <option value="">Pilih rating</option>
+                            @foreach ([5, 4, 3, 2, 1] as $score)
+                                <option value="{{ $score }}" @selected(old('rating') == $score)>{{ $score }} Bintang</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="review">Ulasan / Masukan</label>
+                        <textarea name="review" id="review" rows="3" class="form-control" placeholder="Tulis ulasan Anda mengenai kegiatan ini..." required>{{ old('review') }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm">Kirim Evaluasi</button>
+                </form>
+            @endif
+        </div>
+    </div>
+
     <div class="card">
-        <div class="card-header">{{ $kegiatan->activity_name }}</div>
+        <div class="card-header">
+            Daftar Evaluasi: {{ $kegiatan->activity_name }}
+            @if ($kegiatan->evaluasi->count() > 0)
+                <span class="badge badge-warning ml-2">Rata-rata: {{ round($kegiatan->evaluasi->avg('rating'), 2) }}/5</span>
+            @endif
+        </div>
         <div class="card-body">
             @forelse($kegiatan->evaluasi as $evaluasi)
                 <div class="border-bottom mb-3 pb-3">

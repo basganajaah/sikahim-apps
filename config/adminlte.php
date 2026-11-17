@@ -51,11 +51,6 @@ return [
         'allowed' => true,
     ],
 
-    'adminlte_css_pre' => [
-        'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap',
-        'css/fonts.css',
-    ],
-
     /*
     |--------------------------------------------------------------------------
     | Admin Panel Logo
@@ -68,9 +63,9 @@ return [
     |
     */
 
-    'logo' => '<b>SIKA</b>HIM',
+    'logo' => 'SIKAHIM',
     'logo_img' => 'images/Logo_LukmanHakim.png',
-    'logo_img_class' => 'brand-image img-circle elevation-3',
+    'logo_img_class' => 'brand-image img-circle',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
     'logo_img_alt' => 'Admin Logo',
@@ -115,11 +110,11 @@ return [
     */
 
     'preloader' => [
-        'enabled' => true,
+        'enabled' => false,
         'mode' => 'fullscreen',
         'img' => [
-            'path' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
-            'alt' => 'AdminLTE Preloader Image',
+            'path' => 'images/Logo_LukmanHakim.png',
+            'alt' => 'SIKAHIM',
             'effect' => 'animation__shake',
             'width' => 60,
             'height' => 60,
@@ -143,7 +138,7 @@ return [
     'usermenu_header_class' => 'bg-primary',
     'usermenu_image' => false,
     'usermenu_desc' => false,
-    'usermenu_profile_url' => false,
+    'usermenu_profile_url' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -201,7 +196,7 @@ return [
     'classes_content_wrapper' => '',
     'classes_content_header' => '',
     'classes_content' => '',
-    'classes_sidebar' => 'sidebar-dark-primary elevation-4',
+    'classes_sidebar' => 'sidebar-dark-primary',
     'classes_sidebar_nav' => '',
     'classes_topnav' => 'navbar-white navbar-light',
     'classes_topnav_nav' => 'navbar-expand',
@@ -262,13 +257,13 @@ return [
     */
 
     'use_route_url' => false,
-    'dashboard_url' => 'admin/home',
+    'dashboard_url' => 'dashboard',
     'logout_url' => 'logout',
     'login_url' => 'login',
     'register_url' => 'register',
-    'password_reset_url' => 'password/reset',
-    'password_email_url' => 'password/email',
-    'profile_url' => false,
+    'password_reset_url' => 'forgot-password',
+    'password_email_url' => 'forgot-password',
+    'profile_url' => 'profile',
     'disable_darkmode_routes' => false,
 
     /*
@@ -314,6 +309,19 @@ return [
             'type' => 'fullscreen-widget',
             'topnav_right' => true,
         ],
+        [
+            'type' => 'navbar-notification',
+            'id' => 'sikahim-notification',
+            'icon' => 'fas fa-bell',
+            'url' => 'notifications/read',
+            'topnav_right' => true,
+            'dropdown_mode' => true,
+            'dropdown_flabel' => 'Tandai semua sudah dibaca',
+            'update_cfg' => [
+                'url' => 'notifications/get',
+                'period' => 30,
+            ],
+        ],
 
         // Sidebar items:
         [
@@ -321,16 +329,24 @@ return [
             'text' => 'search',
         ],
         [
-            'text' => 'blog',
-            'url' => 'admin/blog',
-            'can' => 'manage-blog',
-        ],
-        [
             'text' => 'Dashboard',
             'url' => 'admin/home',
             'icon' => 'fas fa-fw fa-home',
+            'role' => 'admin',
         ],
-        ['header' => 'HALAMAN'],
+        [
+            'text' => 'Beranda',
+            'url' => 'users/home',
+            'icon' => 'fas fa-fw fa-home',
+            'role' => 'user',
+        ],
+        [
+            'text' => 'Pendaftaran Saya',
+            'url' => 'users/pendaftaran',
+            'icon' => 'fas fa-fw fa-clipboard-check',
+            'role' => 'user',
+        ],
+        ['header' => 'Kegiatan & data'],
         [
             'text' => 'Kalender',
             'url' => 'admin/calendar',
@@ -344,18 +360,30 @@ return [
                     'text' => 'Dashboard Kegiatan',
                     'url' => 'admin/dashboard-kegiatan',
                     'icon' => 'fas fa-fw fa-th-large',
-
+                    'role' => 'admin',
                 ],
                 [
                     'text' => 'Buat Kegiatan',
                     'url' => 'admin/create-kegiatan',
                     'icon' => 'fas fa-fw fa-plus-square',
-
+                    'role' => 'admin',
                 ],
                 [
                     'text' => 'List Kegiatan',
                     'url' => 'admin/list-kegiatan',
                     'icon' => 'fas fa-fw fa-list-ul',
+                ],
+                [
+                    'text' => 'Kelola Pendaftaran',
+                    'url' => 'admin/kelola-pendaftaran',
+                    'icon' => 'fas fa-fw fa-clipboard-list',
+                    'role' => 'admin',
+                ],
+                [
+                    'text' => 'Kategori & Tag',
+                    'url' => 'admin/kategori-tag',
+                    'icon' => 'fas fa-fw fa-tags',
+                    'role' => 'admin',
                 ],
             ],
         ],
@@ -363,6 +391,12 @@ return [
             'text' => 'Kelola Pengguna',
             'url' => 'admin/kelola-pengguna',
             'icon' => 'fas fa-fw fa-user',
+            'role' => 'admin',
+        ],
+        [
+            'text' => 'Audit Log',
+            'url' => 'admin/audit-logs',
+            'icon' => 'fas fa-fw fa-history',
             'role' => 'admin',
         ],
     ],
@@ -381,13 +415,13 @@ return [
 
     'filters' => [
         JeroenNoten\LaravelAdminLte\Menu\Filters\GateFilter::class,
+        App\Filters\RoleMenuFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\HrefFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\SearchFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\ActiveFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\ClassesFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\LangFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\DataFilter::class,
-        App\Filters\RoleMenuFilter::class,
     ],
 
     /*
@@ -570,6 +604,22 @@ return [
                     'type' => 'js',
                     'asset' => false,
                     'location' => '//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js',
+                ],
+            ],
+        ],
+        // Keep last so it loads after every other plugin stylesheet.
+        'SikahimTheme' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => true,
+                    'location' => 'css/sikahim.css',
                 ],
             ],
         ],

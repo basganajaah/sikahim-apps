@@ -15,6 +15,7 @@ class NotificationSeeder extends Seeder
                 'message' => 'Temukan dan ikuti agenda harian masjid melalui SIKAHIM.',
                 'sent_at' => now(),
                 'is_read' => false,
+                'created_at' => now(),
                 'updated_at' => now(),
             ]
         );
@@ -25,10 +26,15 @@ class NotificationSeeder extends Seeder
 
         $userIds = DB::table('users')->pluck('id');
         foreach ($userIds as $userId) {
-            DB::table('mendapat_notifikasi')->updateOrInsert([
-                'notification_id' => $notificationId,
-                'id' => $userId,
-            ]);
+            DB::table('mendapat_notifikasi')->updateOrInsert(
+                [
+                    'notification_id' => $notificationId,
+                    'id' => $userId,
+                ],
+                [
+                    'is_read' => false,
+                ]
+            );
         }
     }
 }

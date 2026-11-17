@@ -1,7 +1,6 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
-    </div>
+    <x-slot name="heading">Verifikasi email</x-slot>
+    <x-slot name="lead">Kami sudah mengirim tautan verifikasi ke email Anda. Buka tautan itu untuk mengaktifkan akun.</x-slot>
 
     @if (session('status') == 'verification-link-sent')
         <div class="mb-4 font-medium text-sm text-green-600">

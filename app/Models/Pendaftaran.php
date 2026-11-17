@@ -18,6 +18,7 @@ class Pendaftaran extends Model
         'gender',
         'registration_date',
         'registration_status',
+        'notes',
     ];
 
     protected $casts = [

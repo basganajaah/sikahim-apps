@@ -219,7 +219,7 @@
             </li>
             <!--Navbar-->
             <li class="nav-item">
-                <a href="{{ route('admin.dashboard')}}" class="nav-link">
+                <a href="{{ route('home') }}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
                     <p>
                         Dashboard
@@ -227,7 +227,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('admin.index')}}" class="nav-link">
+                <a href="{{ route('kelola-pengguna') }}" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
                     <p>
                         users

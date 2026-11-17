@@ -5,7 +5,7 @@
         </h2>
 
         <p class="mt-1 text-sm text-gray-600">
-            {{ __("Update your account's profile information and email address.") }}
+            {{ __("Perbarui informasi profil akun Anda. Alamat email tidak dapat diubah.") }}
         </p>
     </header>
 
@@ -25,8 +25,7 @@
 
         <div>
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
+            <x-text-input id="email" type="email" class="mt-1" :value="$user->email" disabled readonly />
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <div>
@@ -45,6 +44,23 @@
                     @endif
                 </div>
             @endif
+        </div>
+
+        <div>
+            <x-input-label for="age" :value="__('Usia')" />
+            <x-text-input id="age" name="age" type="number" min="1" max="120" class="mt-1 block w-full" :value="old('age', $user->age)" required />
+            <x-input-error class="mt-2" :messages="$errors->get('age')" />
+        </div>
+
+        <div>
+            <x-input-label for="gender" :value="__('Jenis Kelamin')" />
+            @php($selectedGender = (string) old('gender', $user->gender === null ? '' : (int) $user->gender))
+            <select id="gender" name="gender" class="sk-input" required>
+                <option value="">{{ __('Pilih Jenis Kelamin') }}</option>
+                <option value="1" @selected($selectedGender === '1')>{{ __('Laki-laki') }}</option>
+                <option value="0" @selected($selectedGender === '0')>{{ __('Perempuan') }}</option>
+            </select>
+            <x-input-error class="mt-2" :messages="$errors->get('gender')" />
         </div>
 
         <div class="flex items-center gap-4">
