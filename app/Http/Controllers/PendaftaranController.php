@@ -32,6 +32,7 @@ class PendaftaranController extends Controller
             $lockedActivity = Kegiatan::query()->lockForUpdate()->findOrFail($kegiatan->activity_id);
 
             abort_if($lockedActivity->verification !== 'Terverifikasi', 422, 'Kegiatan belum diverifikasi.');
+            abort_if(in_array($lockedActivity->status, ['Ditunda', 'Selesai'], true), 422, 'Pendaftaran kegiatan tidak dibuka.');
             abort_if($lockedActivity->datetime_started->isPast(), 422, 'Pendaftaran kegiatan sudah ditutup.');
             abort_if(
                 Pendaftaran::where('activity_id', $lockedActivity->activity_id)

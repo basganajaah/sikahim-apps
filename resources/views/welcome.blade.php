@@ -62,7 +62,7 @@
                     </div>
                 </div>
                 <div class="col-lg-5 d-none d-lg-block">
-                    <img class="landing-mockup img-fluid mt-4" src="{{ asset('Images/Masjid_LH_polban.jpg') }}" alt="Masjid">
+                    <img class="landing-mockup img-fluid mt-4" src="{{ asset('images/Masjid_LH_polban.jpg') }}" alt="Masjid">
                 </div>
             </div>
         </main>

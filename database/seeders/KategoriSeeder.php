@@ -22,7 +22,7 @@ class KategoriSeeder extends Seeder
         foreach ($categories as $category) {
             DB::table('kategori')->updateOrInsert(
                 ['category_name' => $category['category_name']],
-                $category
+                array_merge($category, ['created_at' => now(), 'updated_at' => now()])
             );
         }
     }

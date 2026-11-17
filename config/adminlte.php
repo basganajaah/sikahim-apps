@@ -143,7 +143,7 @@ return [
     'usermenu_header_class' => 'bg-primary',
     'usermenu_image' => false,
     'usermenu_desc' => false,
-    'usermenu_profile_url' => false,
+    'usermenu_profile_url' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -262,13 +262,13 @@ return [
     */
 
     'use_route_url' => false,
-    'dashboard_url' => 'admin/home',
+    'dashboard_url' => 'dashboard',
     'logout_url' => 'logout',
     'login_url' => 'login',
     'register_url' => 'register',
-    'password_reset_url' => 'password/reset',
-    'password_email_url' => 'password/email',
-    'profile_url' => false,
+    'password_reset_url' => 'forgot-password',
+    'password_email_url' => 'forgot-password',
+    'profile_url' => 'profile',
     'disable_darkmode_routes' => false,
 
     /*
@@ -345,6 +345,12 @@ return [
             'icon' => 'fas fa-fw fa-home',
             'role' => 'user',
         ],
+        [
+            'text' => 'Pendaftaran Saya',
+            'url' => 'users/pendaftaran',
+            'icon' => 'fas fa-fw fa-clipboard-check',
+            'role' => 'user',
+        ],
         ['header' => 'HALAMAN'],
         [
             'text' => 'Kalender',
@@ -372,6 +378,12 @@ return [
                     'url' => 'admin/list-kegiatan',
                     'icon' => 'fas fa-fw fa-list-ul',
                 ],
+                [
+                    'text' => 'Kelola Pendaftaran',
+                    'url' => 'admin/kelola-pendaftaran',
+                    'icon' => 'fas fa-fw fa-clipboard-list',
+                    'role' => 'admin',
+                ],
             ],
         ],
         [
@@ -379,6 +391,11 @@ return [
             'url' => 'admin/kelola-pengguna',
             'icon' => 'fas fa-fw fa-user',
             'role' => 'admin',
+        ],
+        [
+            'text' => 'Profil',
+            'url' => 'profile',
+            'icon' => 'fas fa-fw fa-user-cog',
         ],
     ],
 

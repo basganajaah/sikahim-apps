@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('mendapat_notifikasi', function (Blueprint $table) {
             $table->foreignId('notification_id')->constrained('notification', 'notification_id')->onDelete('cascade');
             $table->foreignId('id')->constrained('users')->onDelete('cascade');
+            $table->boolean('is_read')->default(false);
             $table->primary(['notification_id', 'id']);
         });
     }

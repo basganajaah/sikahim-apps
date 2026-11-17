@@ -13,7 +13,7 @@
                 margin: 0;
                 overflow: hidden;
                 font-family: 'Figtree', sans-serif;
-                background-image: url('{{ asset('Images/Masjid_LH_polban.jpg') }}');
+                background-image: url('{{ asset('images/Masjid_LH_polban.jpg') }}');
                 background-size: cover;
                 background-position: center;
                 background-repeat: no-repeat;

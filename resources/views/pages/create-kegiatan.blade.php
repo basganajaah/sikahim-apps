@@ -119,8 +119,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="kuota">Kuota Peserta</label>
-                    <input type="number" class="form-control" id="kuota" name="max_participant" placeholder="Kuota Peserta" required>
+                    <label for="kuota">Kuota Peserta (Opsional)</label>
+                    <input type="number" class="form-control" id="kuota" name="max_participant" min="1" value="{{ old('max_participant') }}" placeholder="Kosongkan jika tanpa batas peserta">
                 </div>
 
                 <div class="form-group">

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('id')->constrained('users')->onDelete('cascade');
             $table->foreignId('category_id')->nullable()->constrained('kategori', 'category_id')->onDelete('set null');
             $table->string('activity_name', 255);
-            $table->string('penyelenggara', 50);
+            $table->string('penyelenggara', 255);
             $table->dateTime('datetime_started');
             $table->dateTime('datetime_finished');
             $table->string('location', 255);

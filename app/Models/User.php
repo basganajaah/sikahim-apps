@@ -61,4 +61,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Evaluasi::class, 'id');
     }
+
+    public function adminlte_profile_url(): string
+    {
+        return route('profile.edit');
+    }
 }

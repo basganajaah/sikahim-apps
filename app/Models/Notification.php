@@ -19,18 +19,29 @@ class Notification extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'mendapat_notifikasi', 'notification_id', 'id');
+        return $this->belongsToMany(User::class, 'mendapat_notifikasi', 'notification_id', 'id')
+            ->withPivot('is_read');
     }
 
-    // shortcut: is_read lives on notification table; move is_read to mendapat_notifikasi pivot if per-user read state is needed
     public static function notifyUsers(iterable $userIds, string $title, string $message): void
     {
-        $notification = self::firstOrCreate(
+        $notification = self::updateOrCreate(
             ['title' => $title],
             ['message' => $message, 'sent_at' => now(), 'is_read' => false]
         );
 
-        $notification->users()->syncWithoutDetaching($userIds);
+        $ids = collect($userIds)->values()->all();
+        if (empty($ids)) {
+            return;
+        }
+
+        $syncData = collect($ids)->mapWithKeys(fn ($id) => [$id => ['is_read' => false]])->all();
+        $notification->users()->syncWithoutDetaching($syncData);
+
+        \Illuminate\Support\Facades\DB::table('mendapat_notifikasi')
+            ->where('notification_id', $notification->notification_id)
+            ->whereIn('id', $ids)
+            ->update(['is_read' => false]);
     }
 
     public static function syncForUser(?int $userId = null): void

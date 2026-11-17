@@ -9,17 +9,19 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::select(['id', 'name', 'email'])->get();
+        $users = User::select(['id', 'name', 'email', 'role'])->get();
 
         $data = $users->map(function ($user) {
-            $btnDelete = '<button class="btn btn-xs btn-default text-danger mx-1 shadow delete-btn" data-id="'.$user->id.'" title="Delete">
-                            <i class="fa fa-lg fa-fw fa-trash"></i>
-                        </button>';
+            $btnDelete = $user->role !== 'admin'
+                ? '<button class="btn btn-xs btn-default text-danger mx-1 shadow delete-btn" data-id="'.$user->id.'" title="Delete">
+                        <i class="fa fa-lg fa-fw fa-trash"></i>
+                   </button>'
+                : '<span class="badge badge-secondary">Admin</span>';
 
             return [
                 'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
+                'name' => e($user->name),
+                'email' => e($user->email),
                 'actions' => '<nobr>'.$btnDelete.'</nobr>',
             ];
         });
@@ -29,7 +31,11 @@ class UserController extends Controller
 
     public function destroy(\Illuminate\Http\Request $request, User $user)
     {
-        abort_if($user->is(auth()->user()), 422, 'Akun admin yang sedang digunakan tidak dapat dihapus.');
+        abort_if(
+            $user->is(auth()->user()) || $user->role === 'admin',
+            422,
+            'Akun admin tidak dapat dihapus.'
+        );
 
         $user->delete();
 
