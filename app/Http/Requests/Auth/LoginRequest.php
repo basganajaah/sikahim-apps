@@ -52,6 +52,14 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        if (Auth::user() && Auth::user()->is_active === false) {
+            Auth::guard('web')->logout();
+
+            throw ValidationException::withMessages([
+                'email' => 'Akun Anda telah dinonaktifkan oleh administrator.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

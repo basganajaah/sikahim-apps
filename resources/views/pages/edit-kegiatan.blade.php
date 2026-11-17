@@ -25,7 +25,7 @@
         @endif
         <div class="row">
             <div class="col-md-6">
-                <x-adminlte-input-file id="thumbnail" name="thumbnail" label="Thumbnail Kegiatan (Opsional)"
+                <x-adminlte-input-file id="thumbnail" name="thumbnail" label="Ganti Thumbnail Kegiatan (Opsional)"
                     placeholder="Upload thumbnail baru" igroup-size="md" legend="Browse">
                     <x-slot name="prependSlot">
                         <div class="input-group-text text-dark">
@@ -101,7 +101,21 @@
                         value="{{ old('location', $kegiatan->location) }}" placeholder="Lokasi" required>
                 </div>
 
-                <x-adminlte-input-file id="materi" name="materi[]" label="Materi Kegiatan (Opsional)"
+                @if (!empty($kegiatan->materi))
+                    <div class="form-group">
+                        <label>Materi Saat Ini (Centang untuk menghapus)</label>
+                        @foreach ($kegiatan->materi as $materiPath)
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="remove_materi[]" value="{{ $materiPath }}" id="rem_{{ $loop->index }}">
+                                <label class="form-check-label text-danger" for="rem_{{ $loop->index }}">
+                                    Hapus {{ basename($materiPath) }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
+                <x-adminlte-input-file id="materi" name="materi[]" label="Tambah Materi Kegiatan Baru (Opsional)"
                     placeholder="Upload materi baru" igroup-size="md" legend="Browse" multiple />
 
                 <div class="form-group">

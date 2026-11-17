@@ -384,6 +384,12 @@ return [
                     'icon' => 'fas fa-fw fa-clipboard-list',
                     'role' => 'admin',
                 ],
+                [
+                    'text' => 'Kategori & Tag',
+                    'url' => 'admin/kategori-tag',
+                    'icon' => 'fas fa-fw fa-tags',
+                    'role' => 'admin',
+                ],
             ],
         ],
         [
@@ -391,6 +397,17 @@ return [
             'url' => 'admin/kelola-pengguna',
             'icon' => 'fas fa-fw fa-user',
             'role' => 'admin',
+        ],
+        [
+            'text' => 'Audit Log',
+            'url' => 'admin/audit-logs',
+            'icon' => 'fas fa-fw fa-history',
+            'role' => 'admin',
+        ],
+        [
+            'text' => 'Notifikasi',
+            'url' => 'notifications',
+            'icon' => 'fas fa-fw fa-bell',
         ],
         [
             'text' => 'Profil',

@@ -27,6 +27,56 @@
         </div>
     @endif
 
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ route('users-home') }}">
+                <div class="form-row">
+                    <div class="col-md-3 mb-2">
+                        <input type="text" name="search" class="form-control form-control-sm" value="{{ request('search') }}" placeholder="Cari nama kegiatan...">
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <select name="category_id" class="form-control form-control-sm">
+                            <option value="">Semua Kategori</option>
+                            @foreach ($categories ?? [] as $cat)
+                                <option value="{{ $cat->category_id }}" @selected(request('category_id') == $cat->category_id)>{{ $cat->category_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <select name="tag_id" class="form-control form-control-sm">
+                            <option value="">Semua Tag</option>
+                            @foreach ($tags ?? [] as $tag)
+                                <option value="{{ $tag->tag_id }}" @selected(request('tag_id') == $tag->tag_id)>{{ $tag->tag_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <input type="date" name="date" class="form-control form-control-sm" value="{{ request('date') }}">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <input type="text" name="location" class="form-control form-control-sm" value="{{ request('location') }}" placeholder="Filter lokasi...">
+                    </div>
+                </div>
+                <div class="form-row align-items-center">
+                    <div class="col-md-3 mb-2 mb-md-0">
+                        <select name="status" class="form-control form-control-sm">
+                            <option value="">Status Aktif (Default)</option>
+                            @foreach (['Belum Mulai', 'Berlangsung', 'Selesai', 'Ditunda'] as $st)
+                                <option value="{{ $st }}" @selected(request('status') === $st)>{{ $st }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-9 text-md-right">
+                        <button type="submit" class="btn btn-primary btn-sm mr-1">
+                            <i class="fas fa-filter mr-1"></i> Filter
+                        </button>
+                        <a href="{{ route('users-home') }}" class="btn btn-secondary btn-sm">Reset</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="d-flex align-items-center justify-content-between mb-3">
         <div>
             <h2 class="h4 mb-1">Kegiatan Terdekat</h2>
@@ -49,12 +99,21 @@
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <span class="sikahim-event-date">{{ $item->datetime_started->format('d M Y, H:i') }}</span>
-                            <span class="badge badge-success">Terverifikasi</span>
+                            <span class="badge badge-success">{{ $item->status }}</span>
                         </div>
-                        <h3 class="h5">{{ $item->activity_name }}</h3>
+                        <h3 class="h5">
+                            <a href="{{ route('detail-kegiatan', $item) }}" class="text-dark">{{ $item->activity_name }}</a>
+                        </h3>
+                        <p class="small text-muted mb-1"><i class="fas fa-tag mr-2 text-info"></i>{{ $item->kategori?->category_name ?? '-' }}</p>
                         <p class="small text-muted mb-2"><i class="fas fa-map-marker-alt mr-2 text-success"></i>{{ $item->location }}</p>
                         <p class="small text-muted mb-3"><i class="fas fa-user-friends mr-2 text-success"></i>{{ $item->remaining_slots === null ? 'Tanpa batas peserta' : $item->remaining_slots . ' slot tersisa' }}</p>
                         <p class="text-muted small flex-grow-1">{{ \Illuminate\Support\Str::limit($item->description, 110) }}</p>
+                        <div class="mb-2">
+                            <a href="{{ route('detail-kegiatan', $item) }}" class="btn btn-outline-secondary btn-xs">Detail & Materi</a>
+                            <a href="{{ $item->google_calendar_url }}" target="_blank" rel="noopener" class="btn btn-outline-success btn-xs">
+                                <i class="fab fa-google"></i> Kalender
+                            </a>
+                        </div>
                         <form method="POST" action="{{ route('user.pendaftaran.store', $item) }}" class="border-top pt-3">
                             @csrf
                             <div class="form-row">

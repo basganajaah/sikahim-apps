@@ -31,6 +31,7 @@ class Kegiatan extends Model
         'materi',
         'status',
         'verification',
+        'rejection_reason',
     ];
 
     protected $casts = [
@@ -60,7 +61,25 @@ class Kegiatan extends Model
             return null;
         }
 
-        return max(0, $this->max_participant - ($this->pendaftaran_count ?? $this->pendaftaran()->count()));
+        $activeCount = $this->relationLoaded('pendaftaran')
+            ? $this->pendaftaran->whereNotIn('registration_status', ['Dibatalkan', 'Ditolak'])->count()
+            : ($this->pendaftaran_count ?? $this->pendaftaran()->whereNotIn('registration_status', ['Dibatalkan', 'Ditolak'])->count());
+
+        return max(0, $this->max_participant - $activeCount);
+    }
+
+    public function getGoogleCalendarUrlAttribute(): string
+    {
+        $start = $this->datetime_started?->copy()->utc()->format('Ymd\THis\Z') ?? '';
+        $end = $this->datetime_finished?->copy()->utc()->format('Ymd\THis\Z') ?? '';
+
+        return 'https://calendar.google.com/calendar/render?'.http_build_query([
+            'action' => 'TEMPLATE',
+            'text' => $this->activity_name,
+            'dates' => "{$start}/{$end}",
+            'details' => $this->description ?? '',
+            'location' => $this->location ?? '',
+        ]);
     }
 
     public function kategori()
